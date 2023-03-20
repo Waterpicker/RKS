@@ -1,0 +1,2 @@
+normal texture.
+Can be halved. Red on right = 127.5 + red on left
