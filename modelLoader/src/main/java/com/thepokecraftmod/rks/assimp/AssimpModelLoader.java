@@ -57,7 +57,9 @@ public class AssimpModelLoader {
 
         var scene = Assimp.aiImportFileEx(name, Assimp.aiProcess_Triangulate | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_ImproveCacheLocality | extraFlags, fileIo);
         if (scene == null) throw new RuntimeException(Assimp.aiGetErrorString());
+        var startTime = System.currentTimeMillis();
         var result = readScene(scene);
+        System.out.println("model parsed in " + (System.currentTimeMillis() - startTime) + "ms");
         Assimp.aiReleaseImport(scene);
         return result;
     }
@@ -76,7 +78,9 @@ public class AssimpModelLoader {
         for (int i = 0; i < scene.mNumMeshes(); i++) {
             var mesh = AIMesh.create(scene.mMeshes().get(i));
             var name = mesh.mName().dataString();
-            System.out.println("e");
+            var material = mesh.mMaterialIndex();
+
+            meshes[i] = new Mesh(name, material);
         }
 
         return meshes;

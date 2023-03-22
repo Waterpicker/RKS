@@ -1,5 +1,6 @@
 package com.thepokecraftmod.rks.model;
 
 public record Mesh(
-        String name
+        String name,
+        int material
 ) {}

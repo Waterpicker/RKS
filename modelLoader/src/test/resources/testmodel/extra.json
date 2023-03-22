@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "shiny": [{
+      "type": "replace_texture",
+      "material": "body",
+      "textureType": "diffuse",
+      "replacement": "%ORIGINAL%_rare"
+    }]
+  }
+}
