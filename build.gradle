@@ -23,7 +23,7 @@ allprojects {
     project.ext.lwjglNatives = "natives-windows"
 
     repositories {
-        mavenLocal()
+        mavenCentral()
         maven() {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
