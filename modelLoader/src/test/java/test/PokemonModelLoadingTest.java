@@ -15,13 +15,14 @@ public class PokemonModelLoadingTest {
         var startTime = System.currentTimeMillis();
         var file = AssimpModelLoader.load("C:\\Users\\hydos\\Desktop\\tmp\\model format testing\\model.gltf", PokemonModelLoadingTest::fileSystemResolver, 0);
         FILE_CACHE.clear();
-        System.out.println((System.currentTimeMillis() - startTime) + "ms model loaded");
+        System.out.println("model loaded in " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
     private static byte[] fileSystemResolver(String fileName) {
         return FILE_CACHE.computeIfAbsent(fileName, s -> {
             try {
-                return Files.readAllBytes(Paths.get(s));
+                var cleanString = s.replace("\\", "/").replace("//", "/");
+                return Files.readAllBytes(Paths.get(cleanString));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

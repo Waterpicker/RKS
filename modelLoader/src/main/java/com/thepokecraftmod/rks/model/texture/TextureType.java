@@ -1,0 +1,25 @@
+package com.thepokecraftmod.rks.model.texture;
+
+public enum TextureType {
+    DIFFUSE,
+    SPECULAR,
+    AMBIENT,
+    EMISSIVE,
+    HEIGHT,
+    NORMALS,
+    SHININESS,
+    OPACITY,
+    DISPLACEMENT,
+    LIGHTMAP,
+    REFLECTION,
+    BASE_COLOR,
+    NORMAL_CAMERA,
+    EMISSION_COLOR,
+    METALNESS,
+    DIFFUSE_ROUGHNESS,
+    AMBIENT_OCCLUSION,
+    SHEEN,
+    CLEARCOAT,
+    TRANSMISSION,
+    UNKNOWN,
+}
