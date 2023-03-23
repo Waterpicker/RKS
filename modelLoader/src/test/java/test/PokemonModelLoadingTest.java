@@ -1,8 +1,6 @@
 package test;
 
 import com.thepokecraftmod.rks.assimp.AssimpModelLoader;
-import org.lwjgl.assimp.Assimp;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,9 +11,9 @@ import java.util.Map;
 public class PokemonModelLoadingTest {
     private static final Map<String, byte[]> FILE_CACHE = new HashMap<>();
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         var startTime = System.currentTimeMillis();
-        var file = AssimpModelLoader.load("C:\\Users\\allegra\\Documents\\Github\\hYdos\\RKS\\modelLoader\\src\\test\\resources\\testmodel\\model.gltf", PokemonModelLoadingTest::fileSystemResolver, 0);
+        var file = AssimpModelLoader.load("D:\\Projects\\The-PokeCraft-Mod\\RKS\\modelLoader\\src\\test\\resources\\testmodel\\model.gltf", PokemonModelLoadingTest::fileSystemResolver, 0);
         System.out.println("model loaded in " + (System.currentTimeMillis() - startTime) + "ms");
         FILE_CACHE.clear();
     }

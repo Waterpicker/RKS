@@ -11,6 +11,7 @@ import com.thepokecraftmod.rks.model.texture.Texture;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
@@ -86,10 +87,38 @@ public class AssimpModelLoader {
             var positions = new ArrayList<Vector3f>();
             var uvs = new ArrayList<Vector2f>();
             var normals = new ArrayList<Vector3f>();
-            var boneIds = new ArrayList<Integer>();
-            var weights = new ArrayList<Float>();
 
-            meshes[i] = new Mesh(name, material, null);
+            // Indices
+            var aiFaces = mesh.mFaces();
+            for (int j = 0; j < mesh.mNumFaces(); j += 3) {
+                var aiFace = aiFaces.get(j);
+                indices.add(aiFace.mIndices().get());
+                indices.add(aiFace.mIndices().get());
+                indices.add(aiFace.mIndices().get());
+            }
+
+            // Positions
+            var aiVert = mesh.mVertices();
+            for (int j = 0; j < mesh.mNumVertices(); j++)
+                positions.add(new Vector3f(aiVert.get(j).x(), aiVert.get(j).y(), aiVert.get(j).z()));
+
+            // UV's
+            var aiUV = mesh.mTextureCoords(0);
+            if (aiUV != null) {
+                while (aiUV.remaining() > 0) {
+                    var uv = aiUV.get();
+                    uvs.add(new Vector2f(uv.x(), uv.y()));
+                }
+            }
+
+            // Normals
+            var aiNormals = mesh.mNormals();
+            if (aiNormals != null) {
+                for (int j = 0; j < mesh.mNumFaces(); j++)
+                    normals.add(new Vector3f(aiNormals.get(j).x(), aiNormals.get(j).y(), aiNormals.get(j).z()));
+            }
+
+            meshes[i] = new Mesh(name, material, indices, positions, uvs, normals);
         }
 
         return meshes;
