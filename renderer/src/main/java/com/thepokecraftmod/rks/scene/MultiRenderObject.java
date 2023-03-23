@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.components;
+package com.thepokecraftmod.rks.scene;
 
 import com.pokemod.rarecandy.rendering.ObjectInstance;
 import org.joml.Matrix4f;

@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.animation;
+package com.thepokecraftmod.rks.animation.global;
 
 import com.pokemod.pokeutils.Pair;
 import org.joml.Quaternionf;

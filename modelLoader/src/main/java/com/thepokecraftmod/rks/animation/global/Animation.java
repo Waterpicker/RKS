@@ -1,10 +1,5 @@
-package com.thepokecraftmod.rks.animation;
+package com.thepokecraftmod.rks.animation.global;
 
-import com.pokemod.pokeutils.ModelNode;
-import com.pokemod.pokeutils.tranm.*;
-import de.javagl.jgltf.model.AnimationModel;
-import de.javagl.jgltf.model.NodeModel;
-import dev.thecodewarrior.binarysmd.studiomdl.SkeletonBlock;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -34,7 +29,7 @@ public class Animation {
         animationModifier.accept(this, "glb");
     }
 
-    public Animation(String name, com.pokemod.pokeutils.tranm.Animation rawAnimation, Skeleton skeleton) {
+    public Animation(String name, com.thepokecraftmod.rks.animation.tranm.Animation rawAnimation, Skeleton skeleton) {
         this.name = name;
         this.ticksPerSecond = 60_000;
         this.skeleton = skeleton;
@@ -53,16 +48,6 @@ public class Animation {
         }
 
         animationModifier.accept(this, "gfb");
-    }
-
-    public Animation(String name, SkeletonBlock smdFile, Skeleton bones, int speed) {
-        this.name = name;
-        this.ticksPerSecond = speed;
-        this.skeleton = bones;
-        this.animationNodes = fillAnimationNodesSmdx(smdFile.keyframes);
-        this.animationDuration = findLastKeyTime();
-
-        animationModifier.accept(this, "smd");
     }
 
     private double findLastKeyTime() {
@@ -93,7 +78,7 @@ public class Animation {
         return boneTransforms;
     }
 
-    protected void readNodeHierarchy(float animTime, ModelNode node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
+    protected void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
         var nodeTransform = node.transform;
         if (node.id == -1) node.id = nodeIdMap.getOrDefault(name, -1);
@@ -143,7 +128,7 @@ public class Animation {
         return animationNodes;
     }
 
-    private AnimationNode[] fillAnimationNodesGfb(com.pokemod.pokeutils.tranm.Animation rawAnimation) {
+    private AnimationNode[] fillAnimationNodesGfb(com.thepokecraftmod.rks.animation.tranm.Animation rawAnimation) {
         var animationNodes = new AnimationNode[skeleton.boneMap.size()]; // BoneGroup
 
         for (int i = 0; i < rawAnimation.anim().bonesLength(); i++) {

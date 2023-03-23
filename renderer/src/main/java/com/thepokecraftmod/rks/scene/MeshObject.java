@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.components;
+package com.thepokecraftmod.rks.scene;
 
 import com.pokemod.rarecandy.model.GLModel;
 import com.pokemod.rarecandy.model.Material;

@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.components;
+package com.thepokecraftmod.rks.scene;
 
 import com.pokemod.rarecandy.loading.CubeMapTexture;
 import com.pokemod.rarecandy.pipeline.ShaderPipeline;
