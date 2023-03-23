@@ -9,11 +9,14 @@ import com.thepokecraftmod.rks.model.material.Material;
 import com.thepokecraftmod.rks.model.material.ShadingMethod;
 import com.thepokecraftmod.rks.model.texture.Texture;
 import com.thepokecraftmod.rks.model.texture.TextureType;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -79,8 +82,14 @@ public class AssimpModelLoader {
             var mesh = AIMesh.create(scene.mMeshes().get(i));
             var name = mesh.mName().dataString();
             var material = mesh.mMaterialIndex();
+            var indices = new ArrayList<Integer>();
+            var positions = new ArrayList<Vector3f>();
+            var uvs = new ArrayList<Vector2f>();
+            var normals = new ArrayList<Vector3f>();
+            var boneIds = new ArrayList<Integer>();
+            var weights = new ArrayList<Float>();
 
-            meshes[i] = new Mesh(name, material);
+            meshes[i] = new Mesh(name, material, null);
         }
 
         return meshes;
