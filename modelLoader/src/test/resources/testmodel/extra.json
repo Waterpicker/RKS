@@ -1,10 +1,65 @@
 {
+  "usesTransparency": false,
+  "variantCategories": {
+    "generic": [
+      "normal",
+      "shiny"
+    ],
+    "flavours": [
+      "vanilla",
+      "strawberry",
+      "chocolate",
+      "banana"
+    ]
+  },
   "variants": {
-    "shiny": [{
-      "type": "replace_texture",
-      "material": "body",
-      "textureType": "diffuse",
-      "replacement": "%ORIGINAL%_rare"
-    }]
+    "shiny": [
+      {
+        "type": "append_texture",
+        "material": "body",
+        "textureType": "diffuse",
+        "append": "_shiny"
+      }
+    ],
+    "swirl": [
+      {
+        "type": "append_texture",
+        "material": "iceCream",
+        "textureType": "diffuse",
+        "append": "_swirl"
+      }
+    ],
+    "strawberry": [
+      {
+        "type": "show_mesh",
+        "meshes": [
+          "strawberry"
+        ]
+      }
+    ]
+  },
+  "pokemonConfig": {
+    "nameTagHeight": 2,
+    "partyPortrait": {
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": -30,
+        "z": 0
+      },
+      "scale": 1.0
+    },
+    "legacyTransform": {
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": 1.0
+    }
   }
 }
