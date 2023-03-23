@@ -8,6 +8,7 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 
 public interface VariantModifier {
+    VariantModifier INVALID = new VariantModifier() {};
 
     class Adapter implements JsonDeserializer<VariantModifier> {
 
@@ -20,6 +21,7 @@ public interface VariantModifier {
                 case "append_texture" -> new AppendTextureModifier(object);
                 case "hide_mesh" -> new HideMeshModifier(object);
                 case "show_mesh" -> new ShowMeshModifier(object);
+                default -> INVALID;
             };
         }
     }

@@ -5,22 +5,19 @@ import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Joint;
+import com.thepokecraftmod.rks.model.extra.ModelConfig;
 import com.thepokecraftmod.rks.model.material.Material;
 import com.thepokecraftmod.rks.model.material.ShadingMethod;
 import com.thepokecraftmod.rks.model.texture.Texture;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class AssimpModelLoader {
 
@@ -62,18 +59,25 @@ public class AssimpModelLoader {
         var scene = Assimp.aiImportFileEx(name, Assimp.aiProcess_Triangulate | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_ImproveCacheLocality | extraFlags, fileIo);
         if (scene == null) throw new RuntimeException(Assimp.aiGetErrorString());
         var startTime = System.currentTimeMillis();
-        var result = readScene(scene);
+        var result = readScene(scene, name, locator);
         System.out.println("model parsed in " + (System.currentTimeMillis() - startTime) + "ms");
         Assimp.aiReleaseImport(scene);
         return result;
     }
 
-    private static Model readScene(AIScene scene) {
+    private static Model readScene(AIScene scene, String fullPath, FileLocator locator) {
         var materials = readMaterialData(scene);
         var meshes = readMeshData(scene);
         var root = Joint.create(scene.mRootNode());
+        var config = readConfig(fullPath, locator);
+        return new Model(materials, meshes, root, config);
+    }
 
-        return new Model(materials, meshes, root);
+    private static ModelConfig readConfig(String fullPath, FileLocator locator) {
+        fullPath = fullPath.replace("\\", "/");
+        var extrasPath = fullPath.substring(0, fullPath.lastIndexOf("/")) + "/model.config.json";
+        var json = new String(locator.getFile(extrasPath));
+        return ModelConfig.GSON.fromJson(json, ModelConfig.class);
     }
 
     private static Mesh[] readMeshData(AIScene scene) {

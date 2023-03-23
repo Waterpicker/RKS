@@ -12,13 +12,14 @@
       "banana"
     ]
   },
-  "variants": {
+  "variantModifiers": {
     "shiny": [
       {
-        "type": "append_texture",
+        "type": "modify_texture",
         "material": "body",
         "textureType": "diffuse",
-        "append": "_shiny"
+        "append": "shiny",
+        "method": "replace"
       }
     ],
     "swirl": [
@@ -26,7 +27,8 @@
         "type": "append_texture",
         "material": "iceCream",
         "textureType": "diffuse",
-        "append": "_swirl"
+        "append": "swirl",
+        "method": "subtex_replace"
       }
     ],
     "strawberry": [
