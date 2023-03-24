@@ -2,6 +2,8 @@ package com.thepokecraftmod.rks.animation;
 
 import com.thepokecraftmod.rks.model.animation.Animation;
 import org.joml.Matrix4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -9,6 +11,7 @@ import java.util.*;
  * Manages all Animations
  */
 public class AnimationController {
+    private static final Logger LOGGER = LoggerFactory.getLogger("AnimationController");
     public static final Matrix4f[] NO_ANIMATION = new Matrix4f[220];
     public final List<AnimationInstance> playingInstances = new ArrayList<>();
     public final Map<Animation, Matrix4f[]> instanceIgnoringAnimTransforms = new HashMap<>();
@@ -19,7 +22,7 @@ public class AnimationController {
 
         for (var playingInstance : playingInstances) {
             if (playingInstance.animation == null) {
-                System.err.println("Animation instance has null animation");
+                LOGGER.error("Animation instance has null animation");
                 continue;
             }
 
