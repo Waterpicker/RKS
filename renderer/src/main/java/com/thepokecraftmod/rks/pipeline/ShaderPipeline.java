@@ -1,19 +1,21 @@
 package com.thepokecraftmod.rks.pipeline;
 
-import com.pokemod.rarecandy.components.RenderObject;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
-import com.pokemod.rarecandy.rendering.RareCandy;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.scene.RenderObject;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL33C;
 import org.lwjgl.system.MemoryStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public record ShaderPipeline(Map<String, Consumer<UniformUploadContext>> uniformSuppliers, Map<String, Uniform> uniforms, Runnable preDrawBatch, Runnable postDrawBatch, int program) {
+    private static final Logger LOGGER = LoggerFactory.getLogger("ShaderPipeline");
 
     public void bind() {
         GL20C.glUseProgram(program);
@@ -59,21 +61,21 @@ public record ShaderPipeline(Map<String, Consumer<UniformUploadContext>> uniform
 
         private void addShader(String text, int type, int programId) {
             var shader = GL20C.glCreateShader(type);
-            if (shader == 0) RareCandy.fatal("an error occurred creating the shader object. We don't know what it is.");
+            if (shader == 0) LOGGER.error("an error occurred creating the shader object. We don't know what it is.");
             GL20C.glShaderSource(shader, text);
             GL20C.glCompileShader(shader);
             if (GL20C.glGetShaderi(shader, GL20C.GL_COMPILE_STATUS) == 0)
-                RareCandy.fatal(GL20C.glGetShaderInfoLog(shader, 1024));
+                LOGGER.error(GL20C.glGetShaderInfoLog(shader, 1024));
             GL20C.glAttachShader(programId, shader);
         }
 
         private void compileShader(int programId) {
             GL20C.glLinkProgram(programId);
             if (GL20C.glGetProgrami(programId, GL20C.GL_LINK_STATUS) == 0)
-                RareCandy.fatal(GL20C.glGetProgramInfoLog(programId, 1024));
+                LOGGER.error(GL20C.glGetProgramInfoLog(programId, 1024));
             GL20C.glValidateProgram(programId);
             if (GL20C.glGetProgrami(programId, GL20C.GL_VALIDATE_STATUS) == 0)
-                RareCandy.fatal(GL20C.glGetProgramInfoLog(programId, 1024));
+                LOGGER.error(GL20C.glGetProgramInfoLog(programId, 1024));
         }
 
         public Builder prePostDraw(Runnable preDrawBatch, Runnable postDrawRunBatch) {

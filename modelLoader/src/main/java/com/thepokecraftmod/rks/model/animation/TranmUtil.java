@@ -1,6 +1,7 @@
-package com.thepokecraftmod.rks.animation.global;
+package com.thepokecraftmod.rks.model.animation;
 
 import com.thepokecraftmod.rks.animation.tranm.*;
+import com.thepokecraftmod.rks.model.animation.tranm.*;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3i;

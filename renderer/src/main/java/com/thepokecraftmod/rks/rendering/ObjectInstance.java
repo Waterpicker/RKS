@@ -1,7 +1,7 @@
 package com.thepokecraftmod.rks.rendering;
 
-import com.pokemod.rarecandy.components.RenderObject;
-import com.pokemod.rarecandy.pipeline.UniformBlockUploader;
+import com.thepokecraftmod.rks.pipeline.UniformBlockUploader;
+import com.thepokecraftmod.rks.scene.RenderObject;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 

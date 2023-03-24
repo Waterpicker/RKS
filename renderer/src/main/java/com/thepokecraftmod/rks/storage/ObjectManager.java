@@ -1,8 +1,8 @@
 package com.thepokecraftmod.rks.storage;
 
-import com.pokemod.rarecandy.animation.AnimationController;
-import com.pokemod.rarecandy.components.RenderObject;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.animation.AnimationController;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.scene.RenderObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

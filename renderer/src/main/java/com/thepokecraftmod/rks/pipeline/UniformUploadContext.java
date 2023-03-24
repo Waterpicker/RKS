@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks.pipeline;
 
-import com.pokemod.rarecandy.components.RenderObject;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.scene.RenderObject;
 
 public record UniformUploadContext(RenderObject object, ObjectInstance instance, Uniform uniform) {}

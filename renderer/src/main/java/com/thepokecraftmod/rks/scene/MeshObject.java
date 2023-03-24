@@ -1,9 +1,8 @@
 package com.thepokecraftmod.rks.scene;
 
-import com.pokemod.rarecandy.model.GLModel;
-import com.pokemod.rarecandy.model.Material;
-import com.pokemod.rarecandy.pipeline.ShaderPipeline;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.model.GLModel;
+import com.thepokecraftmod.rks.pipeline.ShaderPipeline;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;

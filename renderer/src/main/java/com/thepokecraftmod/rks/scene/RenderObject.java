@@ -1,8 +1,7 @@
 package com.thepokecraftmod.rks.scene;
 
-import com.pokemod.rarecandy.model.Material;
-import com.pokemod.rarecandy.pipeline.ShaderPipeline;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.pipeline.ShaderPipeline;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 

@@ -1,5 +1,6 @@
-package com.thepokecraftmod.rks.animation.global;
+package com.thepokecraftmod.rks.model.animation;
 
+import com.thepokecraftmod.rks.model.animation.tranm.*;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -18,18 +19,9 @@ public class Animation {
     public final AnimationNode[] animationNodes;
     public float ticksPerSecond;
     protected final Skeleton skeleton;
-    public boolean ignoreInstancedTime = false;
+    public Map<Joint, Matrix4f> lastSuccessfulTransforms = new HashMap<>();
 
-    public Animation(AnimationModel rawAnimation, Skeleton skeleton, int speed) {
-        this.name = rawAnimation.getName();
-        this.ticksPerSecond = speed;
-        this.skeleton = skeleton;
-        this.animationNodes = fillAnimationNodesGlb(rawAnimation.getChannels());
-        this.animationDuration = findLastKeyTime();
-        animationModifier.accept(this, "glb");
-    }
-
-    public Animation(String name, com.thepokecraftmod.rks.animation.tranm.Animation rawAnimation, Skeleton skeleton) {
+    public Animation(String name, com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation, Skeleton skeleton) {
         this.name = name;
         this.ticksPerSecond = 60_000;
         this.skeleton = skeleton;
@@ -80,7 +72,7 @@ public class Animation {
 
     protected void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
-        var nodeTransform = node.transform;
+        var nodeTransform = node.inversePoseMatrix;
         if (node.id == -1) node.id = nodeIdMap.getOrDefault(name, -1);
         var bone = skeleton.get(name);
 
@@ -93,7 +85,7 @@ public class Animation {
                 var translation = AnimationMath.calcInterpolatedPosition(animTime, animNode);
                 nodeTransform.identity().translationRotateScale(translation, rotation, scale);
                 if (bone != null && !Float.isNaN(nodeTransform.m00()))
-                    bone.lastSuccessfulTransform = new Matrix4f(nodeTransform);
+                    lastSuccessfulTransforms.put(bone, new Matrix4f(nodeTransform));
             }
         } else {
             if (bone != null) {
@@ -108,7 +100,7 @@ public class Animation {
         if (bone != null) {
             int transformId = skeleton.getId(bone);
             if (Float.isNaN(globalTransform.m00()))
-                globalTransform = parentTransform.mul(bone.lastSuccessfulTransform, new Matrix4f());
+                globalTransform = parentTransform.mul(lastSuccessfulTransforms.getOrDefault(bone, new Matrix4f()), new Matrix4f());
 
             boneTransforms[transformId] = globalTransform.mul(bone.inversePoseMatrix, new Matrix4f());
         }
@@ -117,18 +109,7 @@ public class Animation {
             readNodeHierarchy(animTime, child, globalTransform, boneTransforms);
     }
 
-    private AnimationNode[] fillAnimationNodesGlb(List<AnimationModel.Channel> channels) {
-        var animationNodes = new AnimationNode[channels.size()];
-
-        for (var channel : channels) {
-            var node = channel.getNodeModel();
-            animationNodes[nodeIdMap.computeIfAbsent(node.getName(), this::newNode)] = new AnimationNode(channels.stream().filter(c -> c.getNodeModel().equals(node)).toList(), node);
-        }
-
-        return animationNodes;
-    }
-
-    private AnimationNode[] fillAnimationNodesGfb(com.thepokecraftmod.rks.animation.tranm.Animation rawAnimation) {
+    private AnimationNode[] fillAnimationNodesGfb(com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation) {
         var animationNodes = new AnimationNode[skeleton.boneMap.size()]; // BoneGroup
 
         for (int i = 0; i < rawAnimation.anim().bonesLength(); i++) {
@@ -173,32 +154,6 @@ public class Animation {
         return animationNodes;
     }
 
-    private AnimationNode[] fillAnimationNodesSmdx(List<SkeletonBlock.Keyframe> keyframes) {
-        var nodes = new HashMap<String, List<SmdBoneStateKey>>();
-
-        for (var keyframe : keyframes) {
-            var time = keyframe.time;
-            var states = keyframe.states;
-
-            for (var boneState : states) {
-                if (boneState.bone < skeleton.boneArray.length - 1) {
-                    var id = skeleton.getName(boneState.bone);
-                    var list = nodes.computeIfAbsent(id, a -> new ArrayList<>());
-                    list.add(new SmdBoneStateKey(time, new Vector3f(boneState.posX, boneState.posY, boneState.posZ), new Quaternionf().rotateZYX(boneState.rotZ, boneState.rotY, boneState.rotX)));
-                }
-            }
-
-            nodes.forEach((k, v) -> v.sort(Comparator.comparingInt(SmdBoneStateKey::time)));
-        }
-
-        var animationNodes = new AnimationNode[nodes.size()];
-        for (var entry : nodes.entrySet()) {
-            animationNodes[nodeIdMap.computeIfAbsent(entry.getKey(), this::newNode)] = new AnimationNode(entry.getValue());
-        }
-
-        return animationNodes;
-    }
-
     private int newNode(String nodeName) {
         return nodeIdMap.size();
     }
@@ -228,7 +183,7 @@ public class Animation {
         public AnimationNode() {
         }
 
-        public AnimationNode(List<AnimationModel.Channel> nodeChannels, NodeModel node) {
+        public AnimationNode(List<AnimationModel.Channel> nodeChannels, Joint node) {
             if (nodeChannels.size() > 3) throw new RuntimeException("More channels than we can handle");
 
             for (var channel : nodeChannels) {
@@ -265,11 +220,11 @@ public class Animation {
             }
 
             if (positionKeys.size() == 0)
-                positionKeys.add(0, node.getTranslation() != null ? convertArrayToVector3f(node.getTranslation()) : new Vector3f());
+                positionKeys.add(0, node.posePosition);
             if (rotationKeys.size() == 0)
-                rotationKeys.add(0, node.getRotation() != null ? convertArrayToQuaterionf(node.getRotation()) : new Quaternionf());
+                rotationKeys.add(0, node.poseRotation);
             if (scaleKeys.size() == 0)
-                scaleKeys.add(0, node.getScale() != null ? convertArrayToVector3f(node.getScale()) : new Vector3f(1, 1, 1));
+                scaleKeys.add(0, node.poseScale);
         }
 
         public TransformStorage.TimeKey<Vector3f> getDefaultPosition() {

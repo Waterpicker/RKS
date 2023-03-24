@@ -1,6 +1,8 @@
 package com.thepokecraftmod.rks.model.animation;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.assimp.AIMatrix4x4;
 import org.lwjgl.assimp.AINode;
 
@@ -10,14 +12,22 @@ import java.util.List;
 public class Joint {
     public final String name;
     public final Joint parent;
-    public final Matrix4f transform;
+    public final Matrix4f inversePoseMatrix;
+    public final Vector3f posePosition;
+    public final Quaternionf poseRotation;
+    public final Vector3f poseScale;
     public final List<Joint> children = new ArrayList<>();
     public int id = -1;
 
     private Joint(AINode aiNode, Joint parent) {
         this.name = aiNode.mName().dataString();
         this.parent = parent;
-        this.transform = from(aiNode.mTransformation());
+        this.inversePoseMatrix = from(aiNode.mTransformation()).invert();
+
+        var transform = from(aiNode.mTransformation());
+        this.posePosition = transform.getTranslation(new Vector3f());
+        this.poseRotation = transform.getUnnormalizedRotation(new Quaternionf());
+        this.poseScale = transform.getScale(new Vector3f());
 
         for (int i = 0; i < aiNode.mNumChildren(); i++)
             children.add(new Joint(AINode.create(aiNode.mChildren().get(i)), this));

@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.animation.global;
+package com.thepokecraftmod.rks.model.animation;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,6 @@
-package com.thepokecraftmod.rks.animation.global;
+package com.thepokecraftmod.rks.model.animation;
 
-import com.pokemod.pokeutils.Pair;
+import com.thepokecraftmod.rks.Pair;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 

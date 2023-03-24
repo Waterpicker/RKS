@@ -1,8 +1,9 @@
 package com.thepokecraftmod.rks.scene;
 
-import com.pokemod.rarecandy.loading.CubeMapTexture;
-import com.pokemod.rarecandy.pipeline.ShaderPipeline;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
+
+import com.thepokecraftmod.rks.loading.CubeMapTexture;
+import com.thepokecraftmod.rks.pipeline.ShaderPipeline;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 

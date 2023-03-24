@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks.pipeline;
 
-import com.pokemod.rarecandy.loading.Texture;
+import com.thepokecraftmod.rks.loading.GpuTexture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -90,8 +90,8 @@ public class Uniform {
         return locations[0];
     }
 
-    public void uploadTexture(Texture texture, int slot) {
-        texture.bind(slot);
+    public void uploadTexture(GpuTexture gpuTexture, int slot) {
+        gpuTexture.bind(slot);
         uploadInt(slot);
     }
 

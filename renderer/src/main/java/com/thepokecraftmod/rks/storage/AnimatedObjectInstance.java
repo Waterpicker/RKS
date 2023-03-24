@@ -1,11 +1,11 @@
 package com.thepokecraftmod.rks.storage;
 
-import com.pokemod.rarecandy.animation.Animation;
-import com.pokemod.rarecandy.animation.AnimationController;
-import com.pokemod.rarecandy.animation.AnimationInstance;
-import com.pokemod.rarecandy.components.AnimatedMeshObject;
-import com.pokemod.rarecandy.components.MultiRenderObject;
-import com.pokemod.rarecandy.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.animation.AnimationController;
+import com.thepokecraftmod.rks.animation.AnimationInstance;
+import com.thepokecraftmod.rks.model.animation.Animation;
+import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.scene.AnimatedMeshObject;
+import com.thepokecraftmod.rks.scene.MultiRenderObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;

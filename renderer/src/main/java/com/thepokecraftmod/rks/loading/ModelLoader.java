@@ -1,28 +1,6 @@
+/*
 package com.thepokecraftmod.rks.loading;
 
-import com.pokemod.pokeutils.DataUtils;
-import com.pokemod.pokeutils.PixelAsset;
-import com.pokemod.pokeutils.reader.TextureReference;
-import com.pokemod.rarecandy.ThreadSafety;
-import com.pokemod.rarecandy.animation.Animation;
-import com.pokemod.rarecandy.animation.Skeleton;
-import com.pokemod.rarecandy.components.AnimatedMeshObject;
-import com.pokemod.rarecandy.components.MeshObject;
-import com.pokemod.rarecandy.components.MultiRenderObject;
-import com.pokemod.rarecandy.components.RenderObject;
-import com.pokemod.rarecandy.model.GLModel;
-import com.pokemod.rarecandy.model.GlCallSupplier;
-import com.pokemod.rarecandy.model.Material;
-import com.pokemod.rarecandy.model.MeshDrawCommand;
-import com.pokemod.rarecandy.pipeline.ShaderPipeline;
-import com.pokemod.rarecandy.rendering.RareCandy;
-import de.javagl.jgltf.model.*;
-import de.javagl.jgltf.model.image.PixelDatas;
-import de.javagl.jgltf.model.io.GltfModelReader;
-import de.javagl.jgltf.model.v2.MaterialModelV2;
-import dev.thecodewarrior.binarysmd.formats.SMDTextReader;
-import dev.thecodewarrior.binarysmd.studiomdl.SMDFile;
-import dev.thecodewarrior.binarysmd.studiomdl.SkeletonBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -140,7 +118,7 @@ public class ModelLoader {
             for (var entry : gfbFileMap.entrySet()) {
                 var name = entry.getKey();
                 var buffer = ByteBuffer.wrap(entry.getValue());
-                var gfbAnim = com.thepokecraftmod.rks.animation.tranm.Animation.getRootAsAnimation(buffer);
+                var gfbAnim = Animation.getRootAsAnimation(buffer);
                 animations.put(name, new Animation(name, gfbAnim, new Skeleton(skeleton)));
             }
 
@@ -330,3 +308,4 @@ public class ModelLoader {
         } else return Map.of("none", materials.get(0));
     }
 }
+*/
