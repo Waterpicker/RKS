@@ -1,5 +1,6 @@
 package com.thepokecraftmod.rks.animation;
 
+import com.thepokecraftmod.rks.model.animation.Animation;
 import org.joml.Matrix4f;
 
 import java.util.*;
@@ -33,7 +34,7 @@ public class AnimationController {
 
             if (playingInstance.startTime == -1) playingInstance.startTime = globalSecondsPassed;
             playingInstance.update(globalSecondsPassed);
-            playingInstance.matrixTransforms = playingInstance.animation.getFrameTransform(playingInstance);
+            playingInstance.matrixTransforms = playingInstance.getFrameTransform(playingInstance);
         }
 
         playingInstances.removeAll(instancesToRemove);

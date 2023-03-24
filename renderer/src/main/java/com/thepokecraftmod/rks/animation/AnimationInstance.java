@@ -1,5 +1,6 @@
 package com.thepokecraftmod.rks.animation;
 
+import com.thepokecraftmod.rks.model.animation.Animation;
 import org.joml.Matrix4f;
 
 /**
@@ -47,6 +48,12 @@ public class AnimationInstance {
     }
 
     public void onLoop() {
+    }
+
+    protected Matrix4f[] getFrameTransform(AnimationInstance instance) {
+        var boneTransforms = new Matrix4f[animation.skeleton.boneArray.length];
+        animation.readNodeHierarchy(instance.getCurrentTime(), animation.skeleton.rootNode, new Matrix4f().identity(), boneTransforms);
+        return boneTransforms;
     }
 
     public float getCurrentTime() {

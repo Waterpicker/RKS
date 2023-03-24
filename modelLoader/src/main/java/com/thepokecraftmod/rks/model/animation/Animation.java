@@ -10,22 +10,20 @@ import java.util.function.BiConsumer;
 
 public class Animation {
     public static BiConsumer<Animation, String> animationModifier = (animation, s) -> {};
-    public static final int FPS_60 = 1000;
-    public static final int FPS_24 = 400;
-    public static final int GLB_SPEED = FPS_60;
     public final String name;
     public final double animationDuration;
     public Map<String, Integer> nodeIdMap = new HashMap<>();
     public final AnimationNode[] animationNodes;
     public float ticksPerSecond;
-    protected final Skeleton skeleton;
+    public final Skeleton skeleton;
     public Map<Joint, Matrix4f> lastSuccessfulTransforms = new HashMap<>();
+    public boolean ignoreInstancedTime = false;
 
     public Animation(String name, com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation, Skeleton skeleton) {
         this.name = name;
         this.ticksPerSecond = 60_000;
         this.skeleton = skeleton;
-        this.animationNodes = fillAnimationNodesGfb(rawAnimation);
+        this.animationNodes = fillAnimationNodesTrinity(rawAnimation);
         this.animationDuration = findLastKeyTime();
 
         for (var animationNode : animationNodes) {
@@ -58,19 +56,13 @@ public class Animation {
         return (float) (ticksPassed % animationDuration);
     }
 
-    public Matrix4f[] getFrameTransform(AnimationInstance instance) {
-        var boneTransforms = new Matrix4f[this.skeleton.boneArray.length];
-        readNodeHierarchy(instance.getCurrentTime(), skeleton.rootNode, new Matrix4f().identity(), boneTransforms);
-        return boneTransforms;
-    }
-
     public Matrix4f[] getFrameTransform(double secondsPassed) {
         var boneTransforms = new Matrix4f[this.skeleton.boneArray.length];
         readNodeHierarchy(getAnimationTime(secondsPassed), skeleton.rootNode, new Matrix4f().identity(), boneTransforms);
         return boneTransforms;
     }
 
-    protected void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
+    public void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
         var nodeTransform = node.inversePoseMatrix;
         if (node.id == -1) node.id = nodeIdMap.getOrDefault(name, -1);
@@ -109,7 +101,7 @@ public class Animation {
             readNodeHierarchy(animTime, child, globalTransform, boneTransforms);
     }
 
-    private AnimationNode[] fillAnimationNodesGfb(com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation) {
+    private AnimationNode[] fillAnimationNodesTrinity(com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation) {
         var animationNodes = new AnimationNode[skeleton.boneMap.size()]; // BoneGroup
 
         for (int i = 0; i < rawAnimation.anim().bonesLength(); i++) {
@@ -158,73 +150,12 @@ public class Animation {
         return nodeIdMap.size();
     }
 
-    public record SmdBoneStateKey(int time, Vector3f pos, Quaternionf rot) {
-    }
-
     public static class AnimationNode {
         public final TransformStorage<Vector3f> positionKeys = new TransformStorage<>();
         public final TransformStorage<Quaternionf> rotationKeys = new TransformStorage<>();
         public final TransformStorage<Vector3f> scaleKeys = new TransformStorage<>();
 
-        public AnimationNode(List<SmdBoneStateKey> keys) {
-            if (keys.isEmpty()) {
-                positionKeys.add(0, new Vector3f());
-                rotationKeys.add(0, new Quaternionf());
-            } else {
-                for (var key : keys) {
-                    positionKeys.add(key.time(), key.pos());
-                    rotationKeys.add(key.time(), key.rot());
-                }
-            }
-
-            scaleKeys.add(0, new Vector3f(1, 1, 1));
-        }
-
         public AnimationNode() {
-        }
-
-        public AnimationNode(List<AnimationModel.Channel> nodeChannels, Joint node) {
-            if (nodeChannels.size() > 3) throw new RuntimeException("More channels than we can handle");
-
-            for (var channel : nodeChannels) {
-                switch (channel.getPath()) {
-                    case "translation" -> {
-                        var timeBuffer = channel.getSampler().getInput().getBufferViewModel().getBufferViewData().asFloatBuffer();
-                        var translationBuffer = channel.getSampler().getOutput().getBufferViewModel().getBufferViewData().asFloatBuffer();
-
-                        for (var i = 0; i < timeBuffer.capacity(); i++) {
-                            positionKeys.add(timeBuffer.get(), new Vector3f(translationBuffer.get(), translationBuffer.get(), translationBuffer.get()));
-                        }
-                    }
-
-                    case "rotation" -> {
-                        var timeBuffer = channel.getSampler().getInput().getBufferViewModel().getBufferViewData().asFloatBuffer();
-                        var rotationBuffer = channel.getSampler().getOutput().getBufferViewModel().getBufferViewData().asFloatBuffer();
-
-                        for (var i = 0; i < timeBuffer.capacity(); i++) {
-                            rotationKeys.add(timeBuffer.get(), new Quaternionf(rotationBuffer.get(), rotationBuffer.get(), rotationBuffer.get(), rotationBuffer.get()));
-                        }
-                    }
-
-                    case "scale" -> {
-                        var timeBuffer = channel.getSampler().getInput().getBufferViewModel().getBufferViewData().asFloatBuffer();
-                        var scaleBuffer = channel.getSampler().getOutput().getBufferViewModel().getBufferViewData().asFloatBuffer();
-
-                        for (var i = 0; i < timeBuffer.capacity(); i++) {
-                            scaleKeys.add(timeBuffer.get(), new Vector3f(scaleBuffer.get(), scaleBuffer.get(), scaleBuffer.get()));
-                        }
-                    }
-
-                    default -> throw new RuntimeException("Unknown Channel Type \"" + channel.getPath() + "\"");
-                }
-            }
-
-            if (positionKeys.size() == 0)
-                positionKeys.add(0, node.posePosition);
-            if (rotationKeys.size() == 0)
-                rotationKeys.add(0, node.poseRotation);
-            if (scaleKeys.size() == 0)
-                scaleKeys.add(0, node.poseScale);
         }
 
         public TransformStorage.TimeKey<Vector3f> getDefaultPosition() {
