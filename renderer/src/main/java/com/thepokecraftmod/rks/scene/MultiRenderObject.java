@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks.scene;
 
-import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.storage.ObjectInstance;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -55,7 +55,7 @@ public class MultiRenderObject<T extends RenderObject> extends RenderObject {
     }
 
     public void applyRootTransformation(ObjectInstance state) {
-        state.transformationMatrix().mul(rootTransformation, state.transformationMatrix());
+        state.transformationMatrix.mul(rootTransformation, state.transformationMatrix);
     }
 
     public Vector3f getDimensions() {
@@ -81,41 +81,33 @@ public class MultiRenderObject<T extends RenderObject> extends RenderObject {
     @Override
     public void render(List<ObjectInstance> instances) {
         if (dirty) {
-            shaderPipeline = null;
+            shader = null;
             smartRender = true;
             for (T object : objects) {
-                if (shaderPipeline == null) shaderPipeline = object.shaderPipeline;
-                else if (shaderPipeline != object.shaderPipeline) smartRender = false;
+                if (shader == null) shader = object.shader;
+                else if (shader != object.shader) smartRender = false;
             }
         }
 
         if (smartRender && isReady()) {
-            shaderPipeline.bind();
+            shader.bind();
 
             for (var instance : instances) {
                 instance.update();
-                shaderPipeline.updateOtherUniforms(instance, objects.get(0));
+                shader.updateOtherUniforms(instance, objects.get(0));
 
                 for (T object : objects) {
                     if (object instanceof MeshObject meshObject) {
-                        shaderPipeline.updateTexUniforms(instance, object);
+                        shader.updateTexUniforms(instance, object);
                         meshObject.model.runDrawCalls();
                     }
                 }
             }
 
-            shaderPipeline.unbind();
+            shader.unbind();
         } else {
             for (T object : this.objects) {
                 object.render(instances);
-            }
-        }
-    }
-
-    public void updateDimensions() {
-        for (RenderObject object : objects) {
-            if (object instanceof MeshObject mesh) {
-                dimensions.max(mesh.model.dimensions);
             }
         }
     }

@@ -1,19 +1,15 @@
 package com.thepokecraftmod.rks.model;
 
-import org.joml.Vector3f;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class GLModel {
-    public List<MeshDrawCommand> meshDrawCommands = new ArrayList<>();
-    public Vector3f dimensions = new Vector3f();
+
+    public final List<MeshDrawCommand> meshDrawCommands = new ArrayList<>();
 
     public void runDrawCalls() {
-        for (var drawCommand : meshDrawCommands) {
-            drawCommand.run();
-        }
+        for (var drawCommand : meshDrawCommands) drawCommand.run();
     }
 
     @Override
@@ -27,6 +23,6 @@ public class GLModel {
 
     @Override
     public int hashCode() {
-        return meshDrawCommands != null ? meshDrawCommands.hashCode() : 0;
+        return meshDrawCommands.hashCode();
     }
 }

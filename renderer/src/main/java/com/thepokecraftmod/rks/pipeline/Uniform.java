@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks.pipeline;
 
-import com.thepokecraftmod.rks.loading.GpuTexture;
+import com.thepokecraftmod.rks.texture.Gpu2DTexture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -12,7 +12,7 @@ import java.nio.FloatBuffer;
 /**
  * @deprecated The use of block uniforms is recommended. This will be removed at a later date.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class Uniform {
     private static final FloatBuffer MAT4_TRANSFER_BUFFER = MemoryUtil.memAllocFloat(16);
     private static final FloatBuffer VEC3_TRANSFER_BUFFER = MemoryUtil.memAllocFloat(3);
@@ -90,8 +90,8 @@ public class Uniform {
         return locations[0];
     }
 
-    public void uploadTexture(GpuTexture gpuTexture, int slot) {
-        gpuTexture.bind(slot);
+    public void uploadTexture(Gpu2DTexture gpu2DTexture, int slot) {
+        gpu2DTexture.bind(slot);
         uploadInt(slot);
     }
 

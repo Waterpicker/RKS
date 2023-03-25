@@ -3,9 +3,9 @@ package com.thepokecraftmod.rks.storage;
 import com.thepokecraftmod.rks.animation.AnimationController;
 import com.thepokecraftmod.rks.animation.AnimationInstance;
 import com.thepokecraftmod.rks.model.animation.Animation;
-import com.thepokecraftmod.rks.rendering.ObjectInstance;
 import com.thepokecraftmod.rks.scene.AnimatedMeshObject;
 import com.thepokecraftmod.rks.scene.MultiRenderObject;
+import com.thepokecraftmod.rks.texture.RenderMaterial;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -20,14 +20,14 @@ public class AnimatedObjectInstance extends ObjectInstance {
     @Nullable
     public AnimationInstance currentAnimation;
 
-    public AnimatedObjectInstance(Matrix4f transformationMatrix, String materialId) {
+    public AnimatedObjectInstance(Matrix4f transformationMatrix, RenderMaterial materialId) {
         super(MAT4F_SIZE * 220 + MAT4F_SIZE, transformationMatrix, materialId);
     }
 
     public void update() {
         try (var stack = MemoryStack.stackPush()) {
             var pTransformationMatrix = stack.nmalloc(MAT4F_SIZE);
-            transformationMatrix().getToAddress(pTransformationMatrix);
+            transformationMatrix.getToAddress(pTransformationMatrix);
             upload(0, MAT4F_SIZE, pTransformationMatrix);
 
             var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * 220);
@@ -49,10 +49,10 @@ public class AnimatedObjectInstance extends ObjectInstance {
     }
 
     public AnimatedMeshObject getAnimatedMesh() {
-        if (object() instanceof MultiRenderObject<?> mro) {
+        if (object instanceof MultiRenderObject<?> mro) {
             return ((List<AnimatedMeshObject>) mro.objects).get(0);
         }
-        return (AnimatedMeshObject) object();
+        return (AnimatedMeshObject) object;
     }
 
     public Matrix4f[] getTransforms() {

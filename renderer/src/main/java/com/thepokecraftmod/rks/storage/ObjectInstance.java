@@ -1,23 +1,24 @@
-package com.thepokecraftmod.rks.rendering;
+package com.thepokecraftmod.rks.storage;
 
+import com.thepokecraftmod.rks.texture.RenderMaterial;
 import com.thepokecraftmod.rks.pipeline.UniformBlockUploader;
 import com.thepokecraftmod.rks.scene.RenderObject;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
 public class ObjectInstance extends UniformBlockUploader {
-    private final Matrix4f transformationMatrix;
-    private String materialId;
-    private RenderObject object;
+    public final Matrix4f transformationMatrix;
+    protected RenderObject object;
+    public RenderMaterial material;
 
-    public ObjectInstance(Matrix4f transformationMatrix, String materialId) {
-        this(MAT4F_SIZE, transformationMatrix, materialId);
+    public ObjectInstance(Matrix4f transformationMatrix, RenderMaterial material) {
+        this(MAT4F_SIZE, transformationMatrix, material);
     }
 
-    public ObjectInstance(int size, Matrix4f transformationMatrix, String materialId) {
+    public ObjectInstance(int size, Matrix4f transformationMatrix, RenderMaterial material) {
         super(size, 1);
         this.transformationMatrix = transformationMatrix;
-        this.materialId = materialId;
+        this.material = material;
     }
 
     public void update() {
@@ -33,19 +34,7 @@ public class ObjectInstance extends UniformBlockUploader {
         object.applyTransformOffset(transformationMatrix);
     }
 
-    public Matrix4f transformationMatrix() {
-        return transformationMatrix;
-    }
-
-    public String materialId() {
-        return materialId;
-    }
-
-    public RenderObject object() {
+    public RenderObject getObject() {
         return object;
-    }
-
-    public void setVariant(String materialId) {
-        this.materialId = materialId;
     }
 }

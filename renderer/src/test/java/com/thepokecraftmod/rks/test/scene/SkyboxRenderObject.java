@@ -1,9 +1,9 @@
-package com.thepokecraftmod.rks.scene;
+package com.thepokecraftmod.rks.test.scene;
 
-
-import com.thepokecraftmod.rks.loading.CubeMapTexture;
-import com.thepokecraftmod.rks.pipeline.ShaderPipeline;
-import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.texture.Gpu3DTexture;
+import com.thepokecraftmod.rks.pipeline.Shader;
+import com.thepokecraftmod.rks.storage.ObjectInstance;
+import com.thepokecraftmod.rks.scene.RenderObject;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -55,11 +55,11 @@ public class SkyboxRenderObject extends RenderObject {
             1.0f, -1.0f, 1.0f
     };
     private final int vao;
-    public final CubeMapTexture texture;
+    public final Gpu3DTexture texture;
 
-    public SkyboxRenderObject(ShaderPipeline pipeline) {
-        this.texture = new CubeMapTexture("D:\\Projects\\PixelmonGenerations\\RareCandy\\src\\renderer\\resources\\cubemap\\panorama_");
-        this.shaderPipeline = pipeline;
+    public SkyboxRenderObject(Shader shader) {
+        this.texture = new Gpu3DTexture("D:\\Projects\\PixelmonGenerations\\RareCandy\\src\\renderer\\resources\\cubemap\\panorama_");
+        this.shader = shader;
         this.vao = GL30.glGenVertexArrays();
         var vbo = GL20C.glGenBuffers();
 
@@ -93,13 +93,13 @@ public class SkyboxRenderObject extends RenderObject {
         if (instances.size() > 1) throw new RuntimeException("only 1 skybox is allowed");
 
         GL11C.glDepthFunc(GL11C.GL_LEQUAL);
-        shaderPipeline.bind();
-        shaderPipeline.updateOtherUniforms(instances.get(0), this);
-        shaderPipeline.updateTexUniforms(instances.get(0), this);
+        shader.bind();
+        shader.updateOtherUniforms(instances.get(0), this);
+        shader.updateTexUniforms(instances.get(0), this);
         GL30C.glBindVertexArray(vao);
         GL11C.glDrawArrays(GL11C.GL_TRIANGLES, 0, 36);
         GL30C.glBindVertexArray(0);
-        shaderPipeline.unbind();
+        shader.unbind();
         GL11C.glDepthFunc(GL11C.GL_LESS);
     }
 }

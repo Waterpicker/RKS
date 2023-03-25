@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks.pipeline;
 
-import com.thepokecraftmod.rks.rendering.ObjectInstance;
+import com.thepokecraftmod.rks.storage.ObjectInstance;
 import com.thepokecraftmod.rks.scene.RenderObject;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL20;
@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public record ShaderPipeline(Map<String, Consumer<UniformUploadContext>> uniformSuppliers, Map<String, Uniform> uniforms, Runnable preDrawBatch, Runnable postDrawBatch, int program) {
-    private static final Logger LOGGER = LoggerFactory.getLogger("ShaderPipeline");
+public record Shader(Map<String, Consumer<UniformUploadContext>> uniformSuppliers, Map<String, Uniform> uniforms, Runnable preDrawBatch, Runnable postDrawBatch, int program) {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Shader");
 
     public void bind() {
         GL20C.glUseProgram(program);
@@ -127,9 +127,9 @@ public record ShaderPipeline(Map<String, Consumer<UniformUploadContext>> uniform
             return this;
         }
 
-        public ShaderPipeline build() {
+        public Shader build() {
             if (this.program == 0) throw new RuntimeException("Shader not created");
-            return new ShaderPipeline(uniformSuppliers, uniforms, preDrawBatch, postDrawRunBatch, program);
+            return new Shader(uniformSuppliers, uniforms, preDrawBatch, postDrawRunBatch, program);
         }
     }
 }

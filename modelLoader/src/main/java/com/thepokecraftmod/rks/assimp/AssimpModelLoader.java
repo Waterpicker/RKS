@@ -58,18 +58,16 @@ public class AssimpModelLoader {
 
         var scene = Assimp.aiImportFileEx(name, Assimp.aiProcess_Triangulate | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_ImproveCacheLocality | extraFlags, fileIo);
         if (scene == null) throw new RuntimeException(Assimp.aiGetErrorString());
-        var startTime = System.currentTimeMillis();
         var result = readScene(scene, name, locator);
-        System.out.println("model parsed in " + (System.currentTimeMillis() - startTime) + "ms");
         Assimp.aiReleaseImport(scene);
         return result;
     }
 
     private static Model readScene(AIScene scene, String fullPath, FileLocator locator) {
-        var materials = readMaterialData(scene);
+        var config = readConfig(fullPath, locator);
+        var materials = readMaterialData(scene, locator);
         var meshes = readMeshData(scene);
         var root = Joint.create(scene.mRootNode());
-        var config = readConfig(fullPath, locator);
         return new Model(materials, meshes, root, config);
     }
 
@@ -94,11 +92,11 @@ public class AssimpModelLoader {
 
             // Indices
             var aiFaces = mesh.mFaces();
-            for (int j = 0; j < mesh.mNumFaces(); j += 3) {
+            for (int j = 0; j < mesh.mNumFaces(); j++) {
                 var aiFace = aiFaces.get(j);
-                indices.add(aiFace.mIndices().get());
-                indices.add(aiFace.mIndices().get());
-                indices.add(aiFace.mIndices().get());
+                indices.add(aiFace.mIndices().get(0));
+                indices.add(aiFace.mIndices().get(1));
+                indices.add(aiFace.mIndices().get(2));
             }
 
             // Positions
@@ -128,34 +126,34 @@ public class AssimpModelLoader {
         return meshes;
     }
 
-    private static Material[] readMaterialData(AIScene scene) {
+    private static Material[] readMaterialData(AIScene scene, FileLocator locator) {
         var materials = new Material[scene.mNumMaterials()];
 
         for (int i = 0; i < scene.mNumMaterials(); i++) {
             var aiMat = AIMaterial.create(scene.mMaterials().get(i));
 
             var textureTypeMap = new ImmutableMap.Builder<TextureType, Optional<Texture>>()
-                    .put(TextureType.DIFFUSE, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_DIFFUSE)))
-                    .put(TextureType.SPECULAR, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_SPECULAR)))
-                    .put(TextureType.AMBIENT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_AMBIENT)))
-                    .put(TextureType.EMISSIVE, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_EMISSIVE)))
-                    .put(TextureType.HEIGHT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_HEIGHT)))
-                    .put(TextureType.NORMALS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_NORMALS)))
-                    .put(TextureType.SHININESS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_SHININESS)))
-                    .put(TextureType.OPACITY, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_OPACITY)))
-                    .put(TextureType.DISPLACEMENT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_DISPLACEMENT)))
-                    .put(TextureType.LIGHTMAP, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_LIGHTMAP)))
-                    .put(TextureType.REFLECTION, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_REFLECTION)))
-                    .put(TextureType.BASE_COLOR, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_BASE_COLOR)))
-                    .put(TextureType.NORMAL_CAMERA, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_NORMAL_CAMERA)))
-                    .put(TextureType.EMISSION_COLOR, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_EMISSION_COLOR)))
-                    .put(TextureType.METALNESS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_METALNESS)))
-                    .put(TextureType.DIFFUSE_ROUGHNESS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_DIFFUSE_ROUGHNESS)))
-                    .put(TextureType.AMBIENT_OCCLUSION, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_AMBIENT_OCCLUSION)))
-                    .put(TextureType.SHEEN, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_SHEEN)))
-                    .put(TextureType.CLEARCOAT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_CLEARCOAT)))
-                    .put(TextureType.TRANSMISSION, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_TRANSMISSION)))
-                    .put(TextureType.UNKNOWN, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_UNKNOWN)))
+                    .put(TextureType.DIFFUSE, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_DIFFUSE, locator)))
+                    .put(TextureType.SPECULAR, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_SPECULAR, locator)))
+                    .put(TextureType.AMBIENT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_AMBIENT, locator)))
+                    .put(TextureType.EMISSIVE, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_EMISSIVE, locator)))
+                    .put(TextureType.HEIGHT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_HEIGHT, locator)))
+                    .put(TextureType.NORMALS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_NORMALS, locator)))
+                    .put(TextureType.SHININESS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_SHININESS, locator)))
+                    .put(TextureType.OPACITY, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_OPACITY, locator)))
+                    .put(TextureType.DISPLACEMENT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_DISPLACEMENT, locator)))
+                    .put(TextureType.LIGHTMAP, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_LIGHTMAP, locator)))
+                    .put(TextureType.REFLECTION, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_REFLECTION, locator)))
+                    .put(TextureType.BASE_COLOR, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_BASE_COLOR, locator)))
+                    .put(TextureType.NORMAL_CAMERA, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_NORMAL_CAMERA, locator)))
+                    .put(TextureType.EMISSION_COLOR, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_EMISSION_COLOR, locator)))
+                    .put(TextureType.METALNESS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_METALNESS, locator)))
+                    .put(TextureType.DIFFUSE_ROUGHNESS, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_DIFFUSE_ROUGHNESS, locator)))
+                    .put(TextureType.AMBIENT_OCCLUSION, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_AMBIENT_OCCLUSION, locator)))
+                    .put(TextureType.SHEEN, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_SHEEN, locator)))
+                    .put(TextureType.CLEARCOAT, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_CLEARCOAT, locator)))
+                    .put(TextureType.TRANSMISSION, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_TRANSMISSION, locator)))
+                    .put(TextureType.UNKNOWN, Optional.ofNullable(assimpGetTextureFile(aiMat, Assimp.aiTextureType_UNKNOWN, locator)))
                     .build();
 
             var materialPropertyMap = new HashMap<String, Object>();
@@ -189,7 +187,7 @@ public class AssimpModelLoader {
         return materials;
     }
 
-    private static Texture assimpGetTextureFile(AIMaterial material, int textureType) {
+    private static Texture assimpGetTextureFile(AIMaterial material, int textureType, FileLocator locator) {
         if (Assimp.aiGetMaterialTextureCount(material, textureType) <= 0)
             return null;
 
@@ -201,7 +199,7 @@ public class AssimpModelLoader {
             var file = path.dataString();
             file = file.replace("\\", "/");
             file = file.replace("//", "");
-            return new Texture(file);
+            return new Texture(file, locator.readImage(file));
 
         }
     }

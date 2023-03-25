@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.loading;
+package com.thepokecraftmod.rks.texture;
 
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
@@ -14,24 +14,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-public class CubeMapTexture {
-    private static final Map<Integer, Integer> MC_TO_GL = Map.of(
-            0, 1, // Pos X
-            1, 3, // Neg X
-            2, 4, // Pos Y
-            3, 5, // Neg Y
-            4, 0, // Pos Z
-            5, 2 // Neg Z
-    );
+public class Gpu3DTexture {
     public final int id;
 
-    public CubeMapTexture(String path) {
+    public Gpu3DTexture(String path) {
         this.id = GL11C.glGenTextures();
         GL11C.glBindTexture(GL20C.GL_TEXTURE_CUBE_MAP, id);
 
         try (var stack = MemoryStack.stackPush()) {
             for (int i = 0; i < 6; i++) {
-                var fileBytes = readResource(Paths.get(path + MC_TO_GL.getOrDefault(i, i) + ".png"));
+                var fileBytes = readResource(Paths.get(path + i + ".png"));
                 var width = stack.mallocInt(1);
                 var height = stack.mallocInt(1);
                 var channels = stack.mallocInt(1);

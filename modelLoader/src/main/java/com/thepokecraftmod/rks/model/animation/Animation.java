@@ -5,11 +5,11 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class Animation {
-    public static BiConsumer<Animation, String> animationModifier = (animation, s) -> {};
     public final String name;
     public final double animationDuration;
     public Map<String, Integer> nodeIdMap = new HashMap<>();
@@ -21,7 +21,7 @@ public class Animation {
 
     public Animation(String name, com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation, Skeleton skeleton) {
         this.name = name;
-        this.ticksPerSecond = 60_000;
+        this.ticksPerSecond = 60;
         this.skeleton = skeleton;
         this.animationNodes = fillAnimationNodesTrinity(rawAnimation);
         this.animationDuration = findLastKeyTime();
@@ -36,8 +36,6 @@ public class Animation {
                     animationNode.scaleKeys.add(animationDuration, animationNode.scaleKeys.get(0).value());
             }
         }
-
-        animationModifier.accept(this, "gfb");
     }
 
     private double findLastKeyTime() {
@@ -146,10 +144,6 @@ public class Animation {
         return animationNodes;
     }
 
-    private int newNode(String nodeName) {
-        return nodeIdMap.size();
-    }
-
     public static class AnimationNode {
         public final TransformStorage<Vector3f> positionKeys = new TransformStorage<>();
         public final TransformStorage<Quaternionf> rotationKeys = new TransformStorage<>();
@@ -174,13 +168,5 @@ public class Animation {
     @Override
     public String toString() {
         return this.name;
-    }
-
-    private static Vector3f convertArrayToVector3f(float[] array) {
-        return new Vector3f(array);
-    }
-
-    private static Quaternionf convertArrayToQuaterionf(float[] array) {
-        return new Quaternionf(array[0], array[1], array[2], array[3]);
     }
 }

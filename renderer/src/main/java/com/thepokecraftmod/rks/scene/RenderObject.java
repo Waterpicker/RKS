@@ -1,19 +1,13 @@
 package com.thepokecraftmod.rks.scene;
 
-import com.thepokecraftmod.rks.pipeline.ShaderPipeline;
-import com.thepokecraftmod.rks.rendering.ObjectInstance;
-import org.jetbrains.annotations.Nullable;
+import com.thepokecraftmod.rks.pipeline.Shader;
+import com.thepokecraftmod.rks.storage.ObjectInstance;
 import org.joml.Matrix4f;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public abstract class RenderObject {
-    protected ShaderPipeline shaderPipeline;
-    protected List<Material> materials = new ArrayList<>();
-    protected Map<String, Material> variants;
+    protected Shader shader;
     protected boolean ready = false;
     protected Matrix4f matrixOffset = new Matrix4f().identity();
     protected boolean disableBackfaceCull = false;
@@ -32,14 +26,6 @@ public abstract class RenderObject {
 
     public void applyTransformOffset(Matrix4f currentTransform) {
         currentTransform.mul(matrixOffset);
-    }
-
-    public Set<String> availableVariants() {
-        return variants.keySet();
-    }
-
-    public Material getMaterial(@Nullable String materialId) {
-        return variants.getOrDefault(materialId, materials.get(0));
     }
 }
 

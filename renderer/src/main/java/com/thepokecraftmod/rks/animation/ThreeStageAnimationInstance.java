@@ -1,5 +1,7 @@
 package com.thepokecraftmod.rks.animation;
 
+import com.thepokecraftmod.rks.model.animation.Animation;
+
 import java.util.Map;
 
 /**
