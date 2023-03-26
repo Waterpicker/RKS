@@ -32,7 +32,7 @@ public class ResourceCachedFileLocator implements FileLocator {
     }
 
     @Override
-    public ByteBuffer readImage(String name) {
+    public ImageInfo readImage(String name) {
         try {
             var parent = getParent(name);
             var cleanString = parent + name.replace("\\", "/").replace("//", "/");
@@ -40,13 +40,14 @@ public class ResourceCachedFileLocator implements FileLocator {
             var image = ImageIO.read(Objects.requireNonNull(is));
             int height = image.getHeight();
             int width = image.getWidth();
+            var needMirror = height / width == 2;
 
-            if (height / width == 2) {
+            if (needMirror) {
                 var mirror = new BufferedImage(width * 2, height, BufferedImage.TYPE_INT_ARGB);
 
                 for (int y = 0; y < height; y++) {
                     for (int lx = 0, rx = width * 2 - 1; lx < width; lx++, rx--) {
-                        int p = mirror.getRGB(lx, y);
+                        int p = image.getRGB(lx, y);
                         mirror.setRGB(lx, y, p);
                         mirror.setRGB(rx, y, p);
                     }
@@ -63,8 +64,9 @@ public class ResourceCachedFileLocator implements FileLocator {
                 data.put((byte) (pixel & 0xFF));
                 data.put((byte) ((pixel >> 24) & 0xFF));
             }
+            data.flip();
 
-            return data;
+            return new ImageInfo(data, needMirror ? width * 2 : width, height);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -47,14 +47,18 @@ allprojects {
         implementation 'com.google.code.gson:gson:2.10.1'
         implementation 'com.google.flatbuffers:flatbuffers-java:23.3.3'
         implementation 'org.slf4j:slf4j-api:2.0.7'
+        testImplementation 'org.slf4j:slf4j-simple:2.0.7'
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
-        options.release = 17
     }
 
     java {
         withSourcesJar()
+
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
 }

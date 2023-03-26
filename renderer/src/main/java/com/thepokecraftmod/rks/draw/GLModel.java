@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.model;
+package com.thepokecraftmod.rks.draw;
 
 import java.util.ArrayList;
 import java.util.List;

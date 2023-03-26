@@ -1,9 +1,7 @@
 package com.thepokecraftmod.rks.test.util;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL43C;
-import org.lwjgl.opengl.GL45C;
+import org.lwjgl.opengl.*;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryUtil;
 
@@ -28,8 +26,8 @@ public class Window {
     }
 
     private void initGlfw(boolean testingPerformance) {
-        Configuration.DEBUG.set(true);
-        Configuration.DEBUG_LOADER.set(true);
+        Configuration.DEBUG.set(false);
+        Configuration.DEBUG_LOADER.set(false);
 
         if (!GLFW.glfwInit()) {
             int errorCode = GLFW.glfwGetError(null);
@@ -53,6 +51,8 @@ public class Window {
         if (GL.createCapabilities(true).OpenGL45) {
             GL45C.glDebugMessageCallback(this::onGlError, MemoryUtil.NULL);
             GL45C.glEnable(GL45C.GL_DEBUG_OUTPUT);
+            GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            GL11C.glEnable(GL11C.GL_DEPTH_TEST);
         }
 
         if (testingPerformance) GLFW.glfwSwapInterval(0);
@@ -97,7 +97,8 @@ public class Window {
             default -> throw new IllegalStateException("Unexpected value: " + glType);
         };
 
-        System.out.println("[OpenGL " + source + " " + type + "] Message: " + MemoryUtil.memUTF8(pMessage));
+        if (!type.equals("'other'"))
+            System.out.println("[OpenGL " + source + " " + type + "] Message: " + MemoryUtil.memUTF8(pMessage));
     }
 
     private void onGlfwError(int error, long pDescription) {

@@ -1,6 +1,7 @@
 package com.thepokecraftmod.rks;
 
 import com.thepokecraftmod.rks.storage.ObjectManager;
+import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,8 +10,13 @@ public class RKS {
     public final ObjectManager objectManager = new ObjectManager();
 
     public RKS() {
-        var startLoad = System.currentTimeMillis();
-        LOGGER.info("RKS Setup Time: " + (System.currentTimeMillis() - startLoad) + "ms");
+        try {
+            GL.getCapabilities();
+            var startLoad = System.currentTimeMillis();
+            LOGGER.info("RKS Setup Time: " + (System.currentTimeMillis() - startLoad) + "ms");
+        } catch (IllegalStateException e) {
+            throw new RuntimeException("RKS Started without OpenGL Context");
+        }
     }
 
     public void render(double secondsPassed) {

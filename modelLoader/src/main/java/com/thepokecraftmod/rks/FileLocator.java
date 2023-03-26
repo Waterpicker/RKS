@@ -13,7 +13,9 @@ public interface FileLocator {
     /**
      * Expects a Native Byte Buffer
      */
-    default ByteBuffer readImage(String name) {
+    default ImageInfo readImage(String name) {
         return null;
     }
+
+    record ImageInfo(ByteBuffer nativeBuffer, int width, int height) {}
 }

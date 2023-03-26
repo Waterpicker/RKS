@@ -13,10 +13,14 @@ public class Texture implements Closeable {
     public final String reference;
     public final Map<String, Object> properties = new HashMap<>();
     public final ByteBuffer data;
+    public final int width;
+    public final int height;
 
-    public Texture(String reference, ByteBuffer data) {
+    public Texture(String reference, ByteBuffer data, int width, int height) {
         this.reference = reference;
         this.data = data;
+        this.width = width;
+        this.height = height;
     }
 
     @Override

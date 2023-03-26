@@ -94,8 +94,6 @@ public class SkyboxRenderObject extends RenderObject {
 
         GL11C.glDepthFunc(GL11C.GL_LEQUAL);
         shader.bind();
-        shader.updateOtherUniforms(instances.get(0), this);
-        shader.updateTexUniforms(instances.get(0), this);
         GL30C.glBindVertexArray(vao);
         GL11C.glDrawArrays(GL11C.GL_TRIANGLES, 0, 36);
         GL30C.glBindVertexArray(0);

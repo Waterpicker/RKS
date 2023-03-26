@@ -199,7 +199,8 @@ public class AssimpModelLoader {
             var file = path.dataString();
             file = file.replace("\\", "/");
             file = file.replace("//", "");
-            return new Texture(file, locator.readImage(file));
+            var info = locator.readImage(file);
+            return new Texture(file, info.nativeBuffer(), info.width(), info.height());
 
         }
     }

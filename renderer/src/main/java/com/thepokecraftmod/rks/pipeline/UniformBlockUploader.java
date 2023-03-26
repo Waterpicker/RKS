@@ -4,6 +4,9 @@ import org.lwjgl.opengl.GL33C;
 
 public abstract class UniformBlockUploader implements AutoCloseable {
     public static final int MAT4F_SIZE = Float.BYTES * 4 * 4;
+    public static final int SAMPLER2D_SIZE = Integer.BYTES;
+    public static final int VEC2_SIZE = Float.BYTES * 2;
+    public static final int VEC3_SIZE = Float.BYTES * 3;
     protected final int id;
 
     public UniformBlockUploader(int size, int index) {

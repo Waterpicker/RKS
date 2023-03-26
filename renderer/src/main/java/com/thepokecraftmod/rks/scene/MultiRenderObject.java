@@ -2,7 +2,6 @@ package com.thepokecraftmod.rks.scene;
 
 import com.thepokecraftmod.rks.storage.ObjectInstance;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +14,10 @@ import java.util.function.Consumer;
  */
 public class MultiRenderObject<T extends RenderObject> extends RenderObject {
 
-    public float scale;
     public final List<T> hiddenObjects = new ArrayList<>();
     public final List<T> objects = new ArrayList<>();
     private final List<Consumer<T>> queue = new ArrayList<>();
-    private boolean dirty = true;
-    private boolean smartRender = false;
     private Matrix4f rootTransformation = new Matrix4f();
-    private final Vector3f dimensions = new Vector3f();
 
     @Override
     public boolean isReady() {
@@ -36,9 +31,8 @@ public class MultiRenderObject<T extends RenderObject> extends RenderObject {
     }
 
     public void add(T obj, boolean hidden) {
-        if(hidden) hiddenObjects.add(obj);
+        if (hidden) hiddenObjects.add(obj);
         else objects.add(obj);
-        dirty = true;
     }
 
     public void unhideAll() {
@@ -56,10 +50,6 @@ public class MultiRenderObject<T extends RenderObject> extends RenderObject {
 
     public void applyRootTransformation(ObjectInstance state) {
         state.transformationMatrix.mul(rootTransformation, state.transformationMatrix);
-    }
-
-    public Vector3f getDimensions() {
-        return dimensions;
     }
 
     @Override
@@ -80,35 +70,6 @@ public class MultiRenderObject<T extends RenderObject> extends RenderObject {
 
     @Override
     public void render(List<ObjectInstance> instances) {
-        if (dirty) {
-            shader = null;
-            smartRender = true;
-            for (T object : objects) {
-                if (shader == null) shader = object.shader;
-                else if (shader != object.shader) smartRender = false;
-            }
-        }
-
-        if (smartRender && isReady()) {
-            shader.bind();
-
-            for (var instance : instances) {
-                instance.update();
-                shader.updateOtherUniforms(instance, objects.get(0));
-
-                for (T object : objects) {
-                    if (object instanceof MeshObject meshObject) {
-                        shader.updateTexUniforms(instance, object);
-                        meshObject.model.runDrawCalls();
-                    }
-                }
-            }
-
-            shader.unbind();
-        } else {
-            for (T object : this.objects) {
-                object.render(instances);
-            }
-        }
+        for (T object : this.objects) object.render(instances);
     }
 }
