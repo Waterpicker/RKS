@@ -1,0 +1,8 @@
+dependencies {
+    implementation "org.lwjgl:lwjgl-assimp"
+    implementation 'com.google.flatbuffers:flatbuffers-java:23.3.3'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+}

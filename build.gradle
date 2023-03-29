@@ -1,20 +1,18 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 subprojects {
     repositories {
         mavenCentral()
     }
-
-    dependencies {
-
-    }
 }
 
 allprojects {
     apply plugin: "java"
     apply plugin: "maven-publish"
+    apply plugin: "com.github.johnrengelman.shadow"
 
     version = '1.0.0'
     group = 'com.thepokecraftmod'
@@ -22,36 +20,32 @@ allprojects {
     project.ext.jomlVersion = "1.10.5"
     project.ext.lwjglNatives = "natives-windows"
 
+    configurations {
+        implementation.extendsFrom shadow
+    }
+
     repositories {
         mavenCentral()
-        maven() {
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        maven() { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 
     dependencies {
         implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
-        implementation "org.lwjgl:lwjgl"
-        implementation "org.lwjgl:lwjgl-assimp"
-        implementation "org.lwjgl:lwjgl-opengl"
-        implementation "org.lwjgl:lwjgl-stb"
-        runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
         implementation "org.joml:joml:${jomlVersion}"
-
+        implementation "org.lwjgl:lwjgl"
         implementation 'org.jetbrains:annotations:24.0.1'
-        implementation 'com.google.guava:guava:31.1-jre'
-        implementation 'com.google.code.gson:gson:2.10.1'
-        implementation 'com.google.flatbuffers:flatbuffers-java:23.3.3'
         implementation 'org.slf4j:slf4j-api:2.0.7'
-        testImplementation 'org.slf4j:slf4j-simple:2.0.7'
+
+        runtimeOnly 'org.slf4j:slf4j-simple:2.0.7'
+        runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
     }
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
+    }
+
+    tasks.build {
+        dependsOn(shadowJar)
     }
 
     java {

@@ -42,7 +42,7 @@ public class TextureOptimiser {
 
                     var southPanel = new JPanel();
                     var save = new JButton("Save");
-                    var sensitivity = new JSlider(JSlider.HORIZONTAL, 0, 255, 20);
+                    var sensitivity = new JSlider(JSlider.HORIZONTAL, 0, 40, 20);
                     southPanel.add(BorderLayout.WEST, new JLabel("Overlay Sensitivity"));
                     southPanel.add(BorderLayout.CENTER, sensitivity);
                     southPanel.add(BorderLayout.EAST, save);
@@ -51,25 +51,26 @@ public class TextureOptimiser {
                     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     frame.setVisible(true);
 
-                    var original = generateOverlay(texture, sensitivity);
+                    var original = generateOverlay(texture, sensitivity, true);
 
                     frame.getContentPane().add(new JLabel(new ImageIcon(original.overlay())));
                     frame.pack();
 
                     sensitivity.addChangeListener(e -> {
                         if (label.get() != null) frame.getContentPane().remove(label.get());
-                        label.set(new JLabel(new ImageIcon(generateOverlay(texture, sensitivity).overlay())));
+                        label.set(new JLabel(new ImageIcon(generateOverlay(texture, sensitivity, true).overlay())));
                         frame.getContentPane().add(label.get());
                         frame.pack();
                     });
 
-                    save.addChangeListener(e -> {
+                    save.addActionListener(e -> {
                         try {
                             var output = Paths.get("out");
                             Files.createDirectories(output);
-                            var images = generateOverlay(texture, sensitivity);
+                            var images = generateOverlay(texture, sensitivity, false);
                             ImageIO.write(images.overlay(), "png", output.resolve(texture.fileName.replace(".png", "_overlay.png")).toFile());
                             ImageIO.write(images.halfMirror(), "png", output.resolve(texture.fileName).toFile());
+                            frame.setVisible(false);
                         } catch (IOException ex) {
                             throw new RuntimeException("Failed to save images", ex);
                         }
@@ -82,7 +83,7 @@ public class TextureOptimiser {
         }
     }
 
-    private static OptimisedImages generateOverlay(ModelTexture texture, JSlider sensitivity) {
+    private static OptimisedImages generateOverlay(ModelTexture texture, JSlider sensitivity, boolean writeWhitePixels) {
         // Step 1: Strip away the right side of the image
         var halfMirror = new BufferedImage(texture.image.getWidth() / 2, texture.image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         halfMirror.setData(texture.image.getData(new Rectangle(0, 0, texture.image.getWidth() / 2, texture.image.getHeight())));
@@ -108,6 +109,7 @@ public class TextureOptimiser {
                             difference(correctGreen, mirroredGreen) > sensitivity.getValue() ||
                             difference(correctBlue, mirroredBlue) > sensitivity.getValue()
                     ) overlay.setRGB(x, y, originalRgb);
+                    else if(writeWhitePixels) overlay.setRGB(x, y, 0xFFFFFFFF);
                 }
             }
         }
