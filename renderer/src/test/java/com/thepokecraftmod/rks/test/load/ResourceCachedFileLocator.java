@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.test.util;
+package com.thepokecraftmod.rks.test.load;
 
 import com.thepokecraftmod.rks.FileLocator;
 import org.lwjgl.system.MemoryUtil;
@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

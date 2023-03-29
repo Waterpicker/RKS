@@ -1,5 +1,14 @@
 {
   "usesTransparency": false,
+  "textures": {
+    "body": {
+      "diffuse": {
+        "layer0": "body_normal.diffuse.jxl",
+        "layer1": "body_normal_details.diffuse.jxl"
+      },
+      "normal": "body_normal.jxl"
+    }
+  },
   "variantCategories": {
     "generic": [
       "normal",

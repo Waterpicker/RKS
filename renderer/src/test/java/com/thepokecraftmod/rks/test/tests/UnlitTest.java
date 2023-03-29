@@ -8,7 +8,7 @@ import com.thepokecraftmod.rks.pipeline.UniformBlockReference;
 import com.thepokecraftmod.rks.storage.ObjectInstance;
 import com.thepokecraftmod.rks.test.load.ExampleModelLoader;
 import com.thepokecraftmod.rks.test.load.MaterialUploader;
-import com.thepokecraftmod.rks.test.util.ResourceCachedFileLocator;
+import com.thepokecraftmod.rks.test.load.ResourceCachedFileLocator;
 import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
 import com.thepokecraftmod.rks.texture.Gpu2DTexture;
