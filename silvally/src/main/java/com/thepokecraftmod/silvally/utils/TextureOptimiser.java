@@ -16,10 +16,11 @@ public class TextureOptimiser {
 
     public static void main(String[] args) {
         System.out.println("This tool will not try to optimise eyes or any non-png images. Please generate eyes yourself (in blender)");
+        if(args.length < 1) throw new RuntimeException("Please specify the path to read from.");
         LafManager.setTheme(new IntelliJTheme());
         LafManager.install();
 
-        var directory = Paths.get("F:\\NewAttempt\\ScarletViolet\\pokemon\\data\\pm0336\\pm0336_00_00");
+        var directory = Paths.get(String.join(" ", args));
 
         try (var files = Files.list(directory)) {
             var textures = files
