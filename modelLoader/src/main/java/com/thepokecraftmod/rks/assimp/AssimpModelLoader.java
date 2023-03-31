@@ -106,7 +106,7 @@ public class AssimpModelLoader {
             if (aiUV != null) {
                 while (aiUV.remaining() > 0) {
                     var uv = aiUV.get();
-                    uvs.add(new Vector2f(uv.x(), uv.y()));
+                    uvs.add(new Vector2f(uv.x(), 1 - uv.y()));
                 }
             }
 

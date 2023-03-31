@@ -1,5 +1,6 @@
 package com.thepokecraftmod.rks.test.load;
 
+import com.thebombzen.jxlatte.imageio.JXLImageReader;
 import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.texture.TextureType;
@@ -9,7 +10,10 @@ import org.lwjgl.opengl.GL20C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,9 +76,12 @@ public class MaterialUploader {
             for (int x = 0; x < baseImage.getWidth(); x++) {
                 for (int y = 0; y < baseImage.getHeight(); y++) {
                     var p = topLayer.getRGB(x, y);
-                    int alpha = (p >> 24) & 0xff;
-                    // TODO: better blending if its between the two values
-                    if (alpha == 0) baseImage.setRGB(x, y, p);
+                    var alpha = 0xFF & (p >> 24);
+                    var red = 0xFF & (p >> 16);
+                    var green = 0xFF & (p >> 8);
+                    var blue = 0xFF & (p);
+                    // TODO: option to set bg color
+                    if (green < 200) baseImage.setRGB(x, y, p);
                 }
             }
         }
