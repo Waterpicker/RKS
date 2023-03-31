@@ -18,7 +18,7 @@ public class Window {
         this.width = width;
         this.height = height;
         try {
-            System.loadLibrary("renderdoc");
+            //System.loadLibrary("renderdoc");
         } catch (Exception ignored) {
             System.err.println("RenderDoc not loaded in tests. This is generally unwanted behaviour");
         }

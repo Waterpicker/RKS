@@ -42,14 +42,14 @@ public class UnlitTest {
 
         var material = new MaterialUploader(model, locator, s -> shader);
 
-        var instance = new ObjectInstance(new Matrix4f(), material::handle);
+        var instance = new ObjectInstance(new Matrix4f().translation(0, 0, 0.5f), material::handle);
         RKS.objectManager.add(object, instance);
 
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
             SHARED.update();
-            instance.transformationMatrix.rotateXYZ(new Vector3f(0, 0.05f, 0));
-            GL11C.glClearColor(0, 0.32156864f, 0, 1.0f);
+            instance.transformationMatrix.rotateXYZ(new Vector3f(0, 0.02f, 0));
+            GL11C.glClearColor(1, 1, 1, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
             RKS.render(0);
             WINDOW.swapBuffers();
