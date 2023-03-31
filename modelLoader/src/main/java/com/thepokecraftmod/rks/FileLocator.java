@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks;
 
-import java.nio.ByteBuffer;
+import java.awt.image.BufferedImage;
 
 /**
  * Method to find and locate files based on the name of the file.
@@ -13,9 +13,7 @@ public interface FileLocator {
     /**
      * Expects a Native Byte Buffer
      */
-    default ImageInfo readImage(String name) {
+    default BufferedImage readImage(String name) {
         return null;
     }
-
-    record ImageInfo(ByteBuffer nativeBuffer, int width, int height) {}
 }

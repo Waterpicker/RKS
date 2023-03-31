@@ -1,61 +1,34 @@
 {
-  "usesTransparency": false,
-  "variantCategories": {
-    "generic": [
-      "normal",
-      "shiny"
-    ],
-    "flavours": [
-      "vanilla",
-      "strawberry",
-      "chocolate",
-      "banana"
-    ]
+  "shadingMethod": "pokemon",
+  "materials": {
+    "body": {
+      "diffuse": [
+        "body_alb.jxl",
+        "body_alb_overlay.jxl"
+      ],
+      "normal": [
+        "body_nrm.jxl"
+      ]
+    }
   },
-  "variantModifiers": {
+  "variants": {
     "shiny": [
       {
-        "type": "modify_texture",
+        "type": "set_texture",
         "material": "body",
         "textureType": "diffuse",
-        "append": "shiny",
-        "method": "replace"
-      }
-    ],
-    "swirl": [
-      {
-        "type": "append_texture",
-        "material": "iceCream",
-        "textureType": "diffuse",
-        "append": "swirl",
-        "method": "subtex_replace"
-      }
-    ],
-    "strawberry": [
-      {
-        "type": "show_mesh",
-        "meshes": [
-          "strawberry"
-        ]
+        "texture": {
+          "layers": [
+            "body_shiny_alb.jxl",
+            "body_shiny_alb_overlay.jxl"
+          ]
+        }
       }
     ]
   },
-  "animations": [
-    {
-      "id": "attack_physical1",
-      "type": "single",
-      "animation": "whatever.tranm"
-    },
-    {
-      "id": "attack_physical2",
-      "type": "enter_loop_exit",
-      "start": "whateverStart.tranm",
-      "loop": "whateverLoop.tranm",
-      "end": "whateverEnd.tranm"
-    }
-  ],
+  "animations": [],
   "pokemonConfig": {
-    "nameTagHeight": 2,
+    "nameTagHeight": 1,
     "partyPortrait": {
       "transform": {
         "x": 0,
@@ -76,16 +49,6 @@
         "z": 0
       },
       "scale": 1.0
-    },
-    "actions": {
-      "battle_attack_physical": [
-        "attack_physical1",
-        "attack_physical2"
-      ],
-      "battle_attack_special": [
-        "attack_physical1",
-        "attack_physical2"
-      ]
     }
   }
 }

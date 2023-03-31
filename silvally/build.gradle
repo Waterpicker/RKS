@@ -1,7 +1,5 @@
 dependencies {
     implementation(project(path: ":renderer"))
-    implementation('com.github.gotson.nightmonkeys:imageio-webp:0.4.1')
-    implementation('com.github.gotson.nightmonkeys:imageio-jxl:0.4.1')
     implementation('com.github.weisj:darklaf-core:3.0.2')
 }
 

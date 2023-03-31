@@ -1,12 +1,18 @@
 {
-  "usesTransparency": false,
-  "textures": {
+  "shadingMethod": "pokemon",
+  "materials": {
     "body": {
       "diffuse": {
-        "layer0": "body_normal.diffuse.jxl",
-        "layer1": "body_normal_details.diffuse.jxl"
+        "layers": [
+          "body_alb.jxl",
+          "body_alb_overlay.jxl"
+        ]
       },
-      "normal": "body_normal.jxl"
+      "normal": {
+        "layers": [
+          "body_nrm.jxl"
+        ]
+      }
     }
   },
   "variantCategories": {

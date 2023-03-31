@@ -1,8 +1,7 @@
 package com.thepokecraftmod.rks.test.load;
 
-import com.thepokecraftmod.rks.Pair;
+import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Model;
-import com.thepokecraftmod.rks.model.texture.Texture;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
 import com.thepokecraftmod.rks.texture.Gpu2DTexture;
@@ -10,40 +9,84 @@ import org.lwjgl.opengl.GL20C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class MaterialUploader {
     private static final Logger LOGGER = LoggerFactory.getLogger("Material Uploader");
+    private static final ForkJoinPool COMMON_POOL = ForkJoinPool.commonPool();
     public final Map<String, Map<Integer, Gpu2DTexture>> materialMap = new HashMap<>();
     public final Map<String, Shader> shaderMap = new HashMap<>();
     private int usedSlots = 0;
 
-    public MaterialUploader(Model model, Function<String, Shader> shaderFunction) {
-        for (var material : model.materials()) {
-            var shader = shaderMap.computeIfAbsent(material.name(), shaderFunction::apply);
-
-            var existingTextures = material.textureMap().entrySet().stream()
-                    .filter(e -> e.getValue().isPresent())
-                    .map(e -> new Pair<>(e.getKey(), e.getValue().get()))
-                    .collect(Collectors.toMap(Pair::a, Pair::b));
+    public MaterialUploader(Model model, FileLocator locator, Function<String, Shader> shaderFunction) {
+        for (var entry : model.config().materials.entrySet()) {
+            var name = entry.getKey();
+            var material = entry.getValue();
+            var shader = shaderMap.computeIfAbsent(name, shaderFunction);
 
             for (var type : shader.typeToSlotMap()) {
-                if (!existingTextures.containsKey(type))
+                if (material.getTextures(type).size() < 1)
                     LOGGER.error("Shader expects " + type + " but the texture is missing");
-                else upload(material.name(), type, existingTextures.get(type));
+                else upload(name, type, mergeAndLoad(model, locator, material.getTextures(type)));
             }
         }
     }
 
-    private void upload(String material, TextureType type, Texture texture) {
+    private Gpu2DTexture mergeAndLoad(Model model, FileLocator locator, List<String> textures) {
+        var imageReferences = textures.stream()
+                .map(s -> model.rootPath() + "/textures/" + s)
+                .map(locator::getFile)
+                .toList();
+
+        var loadedImages = COMMON_POOL.invoke(new LoadImagesTask(imageReferences));
+        var processedImages = new ArrayList<BufferedImage>();
+
+        for (var image : loadedImages) {
+            var width = image.getWidth();
+            var height = image.getHeight();
+            var needMirror = height / width == 2;
+
+            if (needMirror) {
+                var mirror = new BufferedImage(width * 2, height, BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < height; y++) {
+                    for (int lx = 0, rx = width * 2 - 1; lx < width; lx++, rx--) {
+                        int p = image.getRGB(lx, y);
+                        mirror.setRGB(lx, y, p);
+                        mirror.setRGB(rx, y, p);
+                    }
+                }
+
+                processedImages.add(mirror);
+            } else processedImages.add(image);
+        }
+
+        var baseImage = processedImages.get(0);
+        var topLayers = processedImages.subList(1, textures.size());
+        for (var topLayer : topLayers) {
+            for (int x = 0; x < baseImage.getWidth(); x++) {
+                for (int y = 0; y < baseImage.getHeight(); y++) {
+                    var p = topLayer.getRGB(x, y);
+                    int alpha = (p >> 24) & 0xff;
+                    // TODO: better blending if its between the two values
+                    if (alpha == 0) baseImage.setRGB(x, y, p);
+                }
+            }
+        }
+
+        return Gpu2DTexture.create(baseImage, "test.jxl");
+    }
+
+    private void upload(String material, TextureType type, Gpu2DTexture texture) {
         var slot = usedSlots++;
-        var gpuTexture = new Gpu2DTexture(texture.data, texture.width, texture.height, texture.reference);
 
         var gpuTexMap = materialMap.computeIfAbsent(material, s -> new HashMap<>());
-        gpuTexMap.put(slot, gpuTexture);
+        gpuTexMap.put(slot, texture);
     }
 
     public void handle(String materialName) {
@@ -52,7 +95,7 @@ public class MaterialUploader {
         for (var entry : material.entrySet()) entry.getValue().bind(entry.getKey());
 
         // Update Uniforms
-        var diffuseLocation = shaderMap.get(materialName).getUniform("diffuse");
+        var diffuseLocation = shaderMap.getOrDefault(materialName, shaderMap.get("body")).getUniform("diffuse");
         GL20C.glUniform1i(diffuseLocation, 0);
     }
 }

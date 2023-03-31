@@ -5,7 +5,10 @@ import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 
 public class Gpu2DTexture {
@@ -26,6 +29,20 @@ public class Gpu2DTexture {
         GL11C.glTexParameterf(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_NEAREST);
     }
 
+    public static Gpu2DTexture create(BufferedImage image, String name) {
+        var rawData = ((DataBufferInt) image.getData().getDataBuffer()).getData();
+        var data = MemoryUtil.memAlloc(rawData.length * 4);
+        for (var pixel : rawData) {
+            data.put((byte) ((pixel >> 16) & 0xFF));
+            data.put((byte) ((pixel >> 8) & 0xFF));
+            data.put((byte) (pixel & 0xFF));
+            data.put((byte) ((pixel >> 24) & 0xFF));
+        }
+
+        data.flip();
+        return new Gpu2DTexture(data, image.getWidth(), image.getHeight(), name);
+    }
+
     public static Gpu2DTexture create(byte[] bytes, String name) {
         try (var stack = MemoryStack.stackPush()) {
             var fileBytes = Gpu3DTexture.readResource(bytes);
@@ -33,7 +50,8 @@ public class Gpu2DTexture {
             var height = stack.mallocInt(1);
             var channels = stack.mallocInt(1);
             var rgbaBytes = STBImage.stbi_load_from_memory(fileBytes, width, height, channels, 4);
-            if (rgbaBytes == null) throw new RuntimeException("Failed to load image: " + STBImage.stbi_failure_reason());
+            if (rgbaBytes == null)
+                throw new RuntimeException("Failed to load image: " + STBImage.stbi_failure_reason());
 
             return new Gpu2DTexture(rgbaBytes, width.get(0), height.get(0), name);
         }

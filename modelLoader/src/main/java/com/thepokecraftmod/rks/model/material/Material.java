@@ -1,18 +1,25 @@
 package com.thepokecraftmod.rks.model.material;
 
-import com.thepokecraftmod.rks.model.texture.Texture;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
 
 public record Material(
-        String name,
-        Map<TextureType, Optional<Texture>> textureMap,
-        ShadingMethod shadingMethod,
-        Map<String, Object> extraProperties
+        List<String> diffuse,
+        List<String> normal,
+        List<String> roughness,
+        List<String> metallic,
+        List<String> ao
 ) {
-    Optional<Texture> getTexture(TextureType type) {
-        return textureMap.get(type);
+
+    public List<String> getTextures(TextureType type) {
+        return switch (type) {
+            case SPECULAR, LIGHTMAP, UNKNOWN, TRANSMISSION, CLEARCOAT, SHEEN, EMISSION_COLOR, NORMAL_CAMERA, BASE_COLOR, REFLECTION, DISPLACEMENT, OPACITY, SHININESS, HEIGHT, EMISSIVE, AMBIENT -> null;
+            case DIFFUSE -> diffuse;
+            case NORMALS -> normal;
+            case ROUGHNESS -> roughness;
+            case METALNESS -> metallic;
+            case AMBIENT_OCCLUSION -> ao;
+        };
     }
 }

@@ -35,11 +35,12 @@ public class UnlitTest {
                 .build();
 
 
-        var model = AssimpModelLoader.load("testmodel/model.gltf", new ResourceCachedFileLocator(), 0);
+        var locator = new ResourceCachedFileLocator();
+        var model = AssimpModelLoader.load("testmodel/model.gltf", locator, 0);
         var object = ExampleModelLoader.loadMeshes(model);
         for (var meshObject : object.objects) meshObject.setup(shader);
 
-        var material = new MaterialUploader(model, s -> shader);
+        var material = new MaterialUploader(model, locator, s -> shader);
 
         var instance = new ObjectInstance(new Matrix4f(), material::handle);
         RKS.objectManager.add(object, instance);
@@ -53,8 +54,6 @@ public class UnlitTest {
             RKS.render(0);
             WINDOW.swapBuffers();
         }
-
-        model.close();
     }
 
     private static String getResource(String name) {

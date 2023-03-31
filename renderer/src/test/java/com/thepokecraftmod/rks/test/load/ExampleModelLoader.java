@@ -15,7 +15,7 @@ public class ExampleModelLoader {
         var mro = new MultiRenderObject<MeshObject>();
 
         for (var mesh : model.meshes()) {
-            var meshObject = new MeshObject(model.materials()[mesh.material()].name());
+            var meshObject = new MeshObject(model.materialReferences()[mesh.material()]);
 
             var useShort = mesh.indices().size() < Short.MAX_VALUE;
             var indexBuffer = MemoryUtil.memAlloc(mesh.indices().size() * (useShort ? 2 : 4));
