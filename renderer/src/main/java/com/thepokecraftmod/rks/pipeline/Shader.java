@@ -2,6 +2,7 @@ package com.thepokecraftmod.rks.pipeline;
 
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL33C;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public record Shader(
-        List<TextureType> typeToSlotMap,
+        List<TextureType> texturesUsed,
         Runnable preDrawBatch,
         Runnable postDrawBatch,
         int program,
@@ -30,6 +31,25 @@ public record Shader(
         return uniformLocationCache.computeIfAbsent(name, s -> GL20C.glGetUniformLocation(program, s));
     }
 
+    public void uploadInt(String name, int value) {
+        int loc = getUniform(name);
+        GL20C.glUniform1i(loc, value);
+    }
+
+    public void uploadVec3f(String name, Vector3f value) {
+        int loc = getUniform(name);
+        GL20C.glUniform3f(loc, value.x(), value.y(), value.z());
+    }
+
+    public void uploadVec3fs(String name, List<Vector3f> values) {
+        for (int i = 0; i < values.size(); i++) {
+            var loc = getUniform(name + "[" + i + "]");
+            var value = values.get(i);
+
+            GL20C.glUniform3f(loc, value.x(), value.y(), value.z());
+        }
+    }
+
     public void unbind() {
         postDrawBatch.run();
     }
@@ -37,7 +57,7 @@ public record Shader(
     public static class Builder {
 
         private int program;
-        private List<TextureType> typeToSlotMap = new ArrayList<>();
+        private final List<TextureType> typeToSlotMap = new ArrayList<>();
         private Runnable preDrawBatch = () -> {
         };
         private Runnable postDrawRunBatch = () -> {

@@ -13,12 +13,12 @@ public class Window {
     public final int height;
     public long handle;
 
-    public Window(String title, int width, int height, boolean testingPerformance) {
+    public Window(String title, int width, int height, boolean testingPerformance, boolean enableRenderDoc) {
         this.title = title;
         this.width = width;
         this.height = height;
         try {
-            //System.loadLibrary("renderdoc");
+            if (enableRenderDoc) System.loadLibrary("renderdoc");
         } catch (Exception ignored) {
             System.err.println("RenderDoc not loaded in tests. This is generally unwanted behaviour");
         }

@@ -6,8 +6,18 @@
         "body_alb.jxl",
         "body_alb_overlay.jxl"
       ],
-      "normal": [
-        "body_nrm.jxl"
+      "normal": ["body_nrm.jxl"],
+      "roughness": ["body_rgn.jxl"],
+      "ao": ["body_ao.jxl"]
+    },
+    "l_eye": {
+      "diffuse": [
+        "eye_alb.jxl"
+      ]
+    },
+    "r_eye": {
+      "diffuse": [
+        "eye_alb.jxl"
       ]
     }
   },

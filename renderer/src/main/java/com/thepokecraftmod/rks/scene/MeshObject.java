@@ -26,7 +26,7 @@ public class MeshObject extends RenderObject {
 
         for (var instance : instances) {
             instance.update();
-            instance.material.uploadTextures(materialReference);
+            instance.material.updateUniforms(materialReference);
             if (disableBackfaceCull) GL11.glDisable(GL11.GL_CULL_FACE);
             model.runDrawCalls();
             if (disableBackfaceCull) GL11.glEnable(GL11.GL_CULL_FACE);
