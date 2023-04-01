@@ -61,10 +61,10 @@ void main() {
     vec3 albedoColor = pow(texture(albedo, fsIn.uv).rgb, vec3(2.2));
     vec3 normalVector = texture(normal, fsIn.uv).rgb;
     float metallicValue = texture(metallic, fsIn.uv).r;
-    float roughnessValue = texture(roughness, fsIn.uv).g;
+    float roughnessValue = texture(roughness, fsIn.uv).g + 0.3;
     float aoValue = texture(ao, fsIn.uv).b;
 
-    vec3 N = normalize(normalVector);
+    vec3 N = normalize(fsIn.normal);
     vec3 V = normalize(camPos - fsIn.pos);
 
     vec3 F0 = vec3(0.04);

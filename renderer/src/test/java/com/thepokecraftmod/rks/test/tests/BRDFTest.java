@@ -13,6 +13,7 @@ import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11C;
 
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class BRDFTest {
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
             SHARED.update();
+            instance.transformationMatrix.identity().rotateXYZ(new Vector3f(0, WINDOW.getCursorX() / 100, 0));
             instance.transformationMatrix.rotateXYZ(new Vector3f(0, 0.02f, 0));
             GL11C.glClearColor(1, 1, 1, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
@@ -58,9 +60,25 @@ public class BRDFTest {
         }
     }
 
-    private static void uploadUniforms(String materialName, MaterialUploader material) {
-
-        material.handle(materialName);
+    private static void uploadUniforms(String materialName, MaterialUploader uploader) {
+        var shader = uploader.materials.get(materialName).shader;
+        var lightStrength = 20000.0f;
+        shader.uploadVec3f("camPos", new Vector3f(0f, 0f, -1));
+        shader.uploadVec3fs(
+                "lightPositions",
+                new Vector3f(-100.0f, 100.0f, 100.0f),
+                new Vector3f(100.0f, 100.0f, 100.0f),
+                new Vector3f(-100.0f, -100.0f, 100.0f),
+                new Vector3f(100.0f, -100.0f, 100.0f)
+        );
+        shader.uploadVec3fs(
+                "lightColors",
+                new Vector3f(lightStrength, lightStrength, lightStrength),
+                new Vector3f(lightStrength, lightStrength, lightStrength),
+                new Vector3f(lightStrength, lightStrength, lightStrength),
+                new Vector3f(lightStrength, lightStrength, lightStrength)
+        );
+        uploader.handle(materialName);
     }
 
     private static String getResource(String name) {

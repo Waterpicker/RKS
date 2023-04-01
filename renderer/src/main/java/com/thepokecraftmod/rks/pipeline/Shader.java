@@ -41,10 +41,10 @@ public record Shader(
         GL20C.glUniform3f(loc, value.x(), value.y(), value.z());
     }
 
-    public void uploadVec3fs(String name, List<Vector3f> values) {
-        for (int i = 0; i < values.size(); i++) {
+    public void uploadVec3fs(String name, Vector3f... values) {
+        for (int i = 0; i < values.length; i++) {
             var loc = getUniform(name + "[" + i + "]");
-            var value = values.get(i);
+            var value = values[i];
 
             GL20C.glUniform3f(loc, value.x(), value.y(), value.z());
         }

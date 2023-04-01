@@ -3,6 +3,7 @@ package com.thepokecraftmod.rks.test.util;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.Configuration;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.Objects;
@@ -104,5 +105,15 @@ public class Window {
     private void onGlfwError(int error, long pDescription) {
         String description = MemoryUtil.memUTF8(pDescription);
         System.err.printf("An Error has Occurred! (%d%n) Description: %s%n", error, description);
+    }
+
+    public float getCursorX() {
+        try(var stack = MemoryStack.stackPush()) {
+            var pX = stack.mallocDouble(1);
+            var pY = stack.mallocDouble(1);
+            GLFW.glfwGetCursorPos(handle, pX, pY);
+
+            return (float) pX.get(0);
+        }
     }
 }
