@@ -46,8 +46,7 @@ public class PokemonTest {
         var locator = new ResourceCachedFileLocator();
         var model = AssimpModelLoader.load("testmodel/model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
         var object = ExampleModelLoader.loadAnimatedMeshes(model);
-        var skeleton = new Skeleton(model.root());
-        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(locator, "testmodel", skeleton));
+        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(locator, "testmodel", model.skeleton()));
 
         var material = new MaterialUploader(model, locator, s -> shader);
 

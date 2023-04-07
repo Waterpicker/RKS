@@ -4,6 +4,7 @@ import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Joint;
+import com.thepokecraftmod.rks.model.animation.Skeleton;
 import com.thepokecraftmod.rks.model.bone.Bone;
 import com.thepokecraftmod.rks.model.extra.ModelConfig;
 import org.joml.Vector2f;
@@ -62,11 +63,11 @@ public class AssimpModelLoader {
 
     private static Model readScene(AIScene scene, String fullPath, FileLocator locator) {
         var rootPath = fullPath.replace("\\", "/").substring(0, fullPath.lastIndexOf("/"));
+        var skeleton = new Skeleton(Joint.create(scene.mRootNode()));
         var config = readConfig(rootPath, locator);
         var materials = readMaterialData(scene);
-        var meshes = readMeshData(scene);
-        var root = Joint.create(scene.mRootNode());
-        return new Model(rootPath, materials, meshes, root, config);
+        var meshes = readMeshData(skeleton, scene);
+        return new Model(rootPath, materials, meshes, skeleton, config);
     }
 
     private static ModelConfig readConfig(String fullPath, FileLocator locator) {
@@ -75,7 +76,7 @@ public class AssimpModelLoader {
         return ModelConfig.GSON.fromJson(json, ModelConfig.class);
     }
 
-    private static Mesh[] readMeshData(AIScene scene) {
+    private static Mesh[] readMeshData(Skeleton skeleton, AIScene scene) {
         var meshes = new Mesh[scene.mNumMeshes()];
 
         for (int i = 0; i < scene.mNumMeshes(); i++) {
