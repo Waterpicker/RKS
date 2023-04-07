@@ -16,8 +16,9 @@ public class Skeleton {
         this.boneArray = new Joint[jointList.size()];
         this.boneMap = new HashMap<>(jointList.size());
 
-        for (var joint : jointList) {
-            this.boneArray[joint.id] = joint;
+        for (int i = 0; i < jointList.size(); i++) {
+            var joint = jointList.get(i);
+            this.boneArray[i] = joint;
             this.boneMap.put(joint.name, joint);
         }
     }

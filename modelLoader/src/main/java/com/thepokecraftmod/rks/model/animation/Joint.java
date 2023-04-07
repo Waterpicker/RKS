@@ -29,14 +29,7 @@ public class Joint {
     }
 
     public static Joint create(AINode aiRoot) {
-        var joint = new Joint(aiRoot, null);
-        var jointList = new ArrayList<Joint>();
-        populateJoints(joint, jointList);
-
-        int id = 0;
-        for (var j : jointList) j.id = id++;
-
-        return joint;
+        return new Joint(aiRoot, null);
     }
 
     private static void populateJoints(Joint joint, ArrayList<Joint> jointList) {
