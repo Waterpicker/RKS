@@ -1,35 +1,23 @@
 package com.thepokecraftmod.rks.model.animation;
 
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.lwjgl.assimp.AIMatrix4x4;
 import org.lwjgl.assimp.AINode;
-import org.lwjgl.assimp.AIVertexWeight;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Joint {
     public final String name;
     public final Joint parent;
-    public final Matrix4f inversePoseMatrix;
-    public final Vector3f posePosition;
-    public final Quaternionf poseRotation;
-    public final Vector3f poseScale;
+    public final Matrix4f transformMatrix;
     public final List<Joint> children = new ArrayList<>();
     public int id = -1;
 
     private Joint(AINode aiNode, Joint parent) {
         this.name = aiNode.mName().dataString();
         this.parent = parent;
-        this.inversePoseMatrix = from(aiNode.mTransformation()).invert();
-
-        var transform = from(aiNode.mTransformation());
-        this.posePosition = transform.getTranslation(new Vector3f());
-        this.poseRotation = transform.getUnnormalizedRotation(new Quaternionf());
-        this.poseScale = transform.getScale(new Vector3f());
+        this.transformMatrix = from(aiNode.mTransformation());
 
         for (int i = 0; i < aiNode.mNumChildren(); i++)
             children.add(new Joint(AINode.create(aiNode.mChildren().get(i)), this));
@@ -69,16 +57,5 @@ public class Joint {
                 .m13(aiMat4.d2())
                 .m23(aiMat4.d3())
                 .m33(aiMat4.d4());
-    }
-
-    public static class VertexWeight {
-
-        public int vertexId;
-        public float weight;
-
-        public VertexWeight(int vertexId, float weight) {
-            this.vertexId = vertexId;
-            this.weight = weight;
-        }
     }
 }
