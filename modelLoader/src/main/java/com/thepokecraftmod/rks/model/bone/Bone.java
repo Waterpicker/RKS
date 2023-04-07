@@ -14,7 +14,7 @@ public class Bone {
 
     @Override
     public String toString() {
-        return name;
+        return "Bone{" + "name='" + name + '\'' + '}';
     }
 
     public static Bone from(AIBone bone) {

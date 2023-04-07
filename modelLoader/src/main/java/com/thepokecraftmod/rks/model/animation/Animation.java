@@ -62,7 +62,7 @@ public class Animation {
 
     public void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
-        var nodeTransform = node.transformMatrix;
+        var nodeTransform = node.transform;
         if (node.id == -1) node.id = nodeIdMap.getOrDefault(name, -1);
         var bone = skeleton.get(name);
 
@@ -78,7 +78,7 @@ public class Animation {
                     lastSuccessfulTransforms.put(bone, new Matrix4f(nodeTransform));
             }
         } else if (bone != null) {
-            nodeTransform.identity().mul(node.transformMatrix);
+            nodeTransform.identity().mul(node.transform);
         }
 
         var globalTransform = parentTransform.mul(nodeTransform, new Matrix4f());
@@ -87,7 +87,7 @@ public class Animation {
             if (Float.isNaN(globalTransform.m00()))
                 globalTransform = parentTransform.mul(lastSuccessfulTransforms.getOrDefault(bone, new Matrix4f()), new Matrix4f());
 
-            boneTransforms[transformId] = globalTransform.mul(bone.transformMatrix, new Matrix4f());
+            boneTransforms[transformId] = globalTransform.mul(bone.transform, new Matrix4f());
         }
 
         for (var child : node.children)

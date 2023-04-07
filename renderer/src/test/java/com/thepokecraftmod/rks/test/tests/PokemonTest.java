@@ -3,7 +3,6 @@ package com.thepokecraftmod.rks.test.tests;
 import com.thepokecraftmod.rks.RKS;
 import com.thepokecraftmod.rks.animation.AnimationInstance;
 import com.thepokecraftmod.rks.assimp.AssimpModelLoader;
-import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Animation;
 import com.thepokecraftmod.rks.model.animation.Skeleton;
 import com.thepokecraftmod.rks.model.texture.TextureType;
@@ -17,7 +16,6 @@ import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11C;
 
 import java.io.IOException;
@@ -48,11 +46,12 @@ public class PokemonTest {
         var locator = new ResourceCachedFileLocator();
         var model = AssimpModelLoader.load("testmodel/model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
         var object = ExampleModelLoader.loadAnimatedMeshes(model);
-        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(model, locator, "testmodel"));
+        var skeleton = new Skeleton(model.root());
+        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(locator, "testmodel", skeleton));
 
         var material = new MaterialUploader(model, locator, s -> shader);
 
-        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -0.8f, -2f), materialName -> uploadUniforms(materialName, material));
+        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -1, -80f), materialName -> uploadUniforms(materialName, material));
         RKS.objectManager.add(object, instance);
 
         instance.currentAnimation = new AnimationInstance(object.objects.get(0).animations.get("idle"));
@@ -61,7 +60,6 @@ public class PokemonTest {
             WINDOW.pollEvents();
             SHARED.update();
             instance.transformationMatrix.identity().rotateXYZ(new Vector3f(0, WINDOW.getCursorX() / 100, 0));
-            instance.transformationMatrix.rotateXYZ(new Vector3f(0, 0.02f, 0));
             GL11C.glClearColor(0, 0, 0, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
             RKS.render((System.currentTimeMillis() - START_TIME) / 1000d);
@@ -69,8 +67,7 @@ public class PokemonTest {
         }
     }
 
-    private static Map<String, Animation> loadAnimations(Model model, ResourceCachedFileLocator locator, String path) {
-        var skeleton = new Skeleton(model.root());
+    private static Map<String, Animation> loadAnimations(ResourceCachedFileLocator locator, String path, Skeleton skeleton) {
         var pAnimation = ByteBuffer.wrap(locator.getFile(path + "/pm0336_00_00_00000_defaultwait01_loop.tranm"));
         var trAnimation = com.thepokecraftmod.rks.model.animation.tranm.Animation.getRootAsAnimation(pAnimation);
         var animation = new Animation("idle", trAnimation, skeleton);
