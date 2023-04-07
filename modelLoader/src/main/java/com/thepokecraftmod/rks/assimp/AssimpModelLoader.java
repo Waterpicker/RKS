@@ -4,17 +4,17 @@ import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Joint;
+import com.thepokecraftmod.rks.model.bone.Bone;
 import com.thepokecraftmod.rks.model.extra.ModelConfig;
-import com.thepokecraftmod.rks.model.material.Material;
-import com.thepokecraftmod.rks.model.material.ShadingMethod;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.*;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+
+import static java.util.Objects.requireNonNull;
 
 public class AssimpModelLoader {
 
@@ -86,6 +86,7 @@ public class AssimpModelLoader {
             var positions = new ArrayList<Vector3f>();
             var uvs = new ArrayList<Vector2f>();
             var normals = new ArrayList<Vector3f>();
+            var bones = new ArrayList<Bone>();
 
             // Indices
             var aiFaces = mesh.mFaces();
@@ -113,11 +114,21 @@ public class AssimpModelLoader {
             // Normals
             var aiNormals = mesh.mNormals();
             if (aiNormals != null) {
-                for (int j = 0; j < mesh.mNumFaces(); j++)
+                for (int j = 0; j < mesh.mNumVertices(); j++)
                     normals.add(new Vector3f(aiNormals.get(j).x(), aiNormals.get(j).y(), aiNormals.get(j).z()));
             }
 
-            meshes[i] = new Mesh(name, material, indices, positions, uvs, normals);
+            // Bones
+            if (mesh.mBones() != null) {
+                var aiBones = requireNonNull(mesh.mBones());
+
+                for (int j = 0; j < aiBones.capacity(); j++) {
+                    var bone = AIBone.create(aiBones.get(j));
+                    bones.add(Bone.from(bone));
+                }
+            }
+
+            meshes[i] = new Mesh(name, material, indices, positions, uvs, normals, bones);
         }
 
         return meshes;

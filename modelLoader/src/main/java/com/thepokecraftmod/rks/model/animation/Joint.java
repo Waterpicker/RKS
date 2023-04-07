@@ -5,9 +5,11 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.assimp.AIMatrix4x4;
 import org.lwjgl.assimp.AINode;
+import org.lwjgl.assimp.AIVertexWeight;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Joint {
     public final String name;
@@ -49,7 +51,7 @@ public class Joint {
         for (var child : joint.children) populateJoints(child, jointList);
     }
 
-    private static Matrix4f from(AIMatrix4x4 aiMat4) {
+    public static Matrix4f from(AIMatrix4x4 aiMat4) {
         return new Matrix4f()
                 .m00(aiMat4.a1())
                 .m10(aiMat4.a2())
@@ -67,5 +69,16 @@ public class Joint {
                 .m13(aiMat4.d2())
                 .m23(aiMat4.d3())
                 .m33(aiMat4.d4());
+    }
+
+    public static class VertexWeight {
+
+        public int vertexId;
+        public float weight;
+
+        public VertexWeight(int vertexId, float weight) {
+            this.vertexId = vertexId;
+            this.weight = weight;
+        }
     }
 }

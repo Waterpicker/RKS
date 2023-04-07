@@ -17,11 +17,13 @@ import java.util.Map;
 
 public class AnimatedObjectInstance extends ObjectInstance {
 
+    private final int boneCount;
     @Nullable
     public AnimationInstance currentAnimation;
 
-    public AnimatedObjectInstance(Matrix4f transformationMatrix, RenderMaterial materialId) {
-        super(MAT4F_SIZE * 220 + MAT4F_SIZE, transformationMatrix, materialId);
+    public AnimatedObjectInstance(int boneCount, Matrix4f transformationMatrix, RenderMaterial materialId) {
+        super(MAT4F_SIZE * boneCount + MAT4F_SIZE, transformationMatrix, materialId);
+        this.boneCount = boneCount;
     }
 
     public void update() {
@@ -30,12 +32,12 @@ public class AnimatedObjectInstance extends ObjectInstance {
             transformationMatrix.getToAddress(pTransformationMatrix);
             upload(0, MAT4F_SIZE, pTransformationMatrix);
 
-            var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * 220);
+            var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * boneCount);
             var transforms = getTransforms();
             for (int i = 0; i < transforms.length; i++)
                 transforms[i].getToAddress(pAnimTransforms + (long) i * MAT4F_SIZE);
 
-            upload(MAT4F_SIZE, MAT4F_SIZE * 220, pAnimTransforms);
+            upload(MAT4F_SIZE, MAT4F_SIZE * boneCount, pAnimTransforms);
         }
     }
 

@@ -1,15 +1,17 @@
 package com.thepokecraftmod.rks.model;
 
+import com.thepokecraftmod.rks.model.bone.Bone;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public record Mesh(
         String name,
         int material,
-        ArrayList<Integer> indices,
-        ArrayList<Vector3f> positions,
-        ArrayList<Vector2f> uvs,
-        ArrayList<Vector3f> normals
+        List<Integer> indices,
+        List<Vector3f> positions,
+        List<Vector2f> uvs,
+        List<Vector3f> normals,
+        List<Bone> bones
 ) {}

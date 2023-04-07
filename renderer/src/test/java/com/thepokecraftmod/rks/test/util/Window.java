@@ -52,7 +52,7 @@ public class Window {
         if (GL.createCapabilities(true).OpenGL45) {
             GL45C.glDebugMessageCallback(this::onGlError, MemoryUtil.NULL);
             GL45C.glEnable(GL45C.GL_DEBUG_OUTPUT);
-            GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            GL11C.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
             GL11C.glEnable(GL11C.GL_DEPTH_TEST);
         }
 
