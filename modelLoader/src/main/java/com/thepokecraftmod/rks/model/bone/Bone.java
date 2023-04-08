@@ -10,7 +10,7 @@ public class Bone {
 
     public String name;
     public VertexWeight[] weights;
-    public Matrix4f offsetMatrix;
+    public Matrix4f inverseBindMatrix;
 
     @Override
     public String toString() {
@@ -19,7 +19,7 @@ public class Bone {
 
     public static Bone from(AIBone bone) {
         var b = new Bone();
-        b.offsetMatrix = Joint.from(bone.mOffsetMatrix());
+        b.inverseBindMatrix = Joint.from(bone.mOffsetMatrix());
         b.name = bone.mName().dataString();
 
         var aiWeights = Objects.requireNonNull(bone.mWeights());

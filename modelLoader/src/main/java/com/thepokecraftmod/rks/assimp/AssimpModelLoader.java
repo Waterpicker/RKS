@@ -124,11 +124,13 @@ public class AssimpModelLoader {
                 var aiBones = requireNonNull(mesh.mBones());
 
                 for (int j = 0; j < aiBones.capacity(); j++) {
-                    var bone = AIBone.create(aiBones.get(j));
-                    bones.add(Bone.from(bone));
+                    var aiBone = AIBone.create(aiBones.get(j));
+                    var bone = Bone.from(aiBone);
+                    bones.add(bone);
                 }
             }
 
+            skeleton.link(bones.toArray(Bone[]::new));
             meshes[i] = new Mesh(name, material, indices, positions, uvs, normals, bones);
         }
 

@@ -1,25 +1,31 @@
 package com.thepokecraftmod.rks.model.animation;
 
+import com.thepokecraftmod.rks.model.bone.Bone;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Skeleton {
-    public final Joint[] boneArray;
-    public final Map<String, Joint> boneMap;
+    public final Joint[] joints;
+    public final Map<String, Joint> jointMap;
+    public final Map<String, Bone> boneMap;
     public final Joint rootNode;
+    public Bone[] bones;
 
     public Skeleton(Joint root) {
         var jointList = new ArrayList<Joint>();
         populateJoints(root, jointList);
         this.rootNode = root;
-        this.boneArray = new Joint[jointList.size()];
+        this.joints = new Joint[jointList.size()];
+        this.jointMap = new HashMap<>(jointList.size());
         this.boneMap = new HashMap<>(jointList.size());
 
         for (int i = 0; i < jointList.size(); i++) {
             var joint = jointList.get(i);
-            this.boneArray[i] = joint;
-            this.boneMap.put(joint.name, joint);
+            this.joints[i] = joint;
+            this.jointMap.put(joint.name, joint);
         }
     }
 
@@ -34,25 +40,39 @@ public class Skeleton {
     }
 
     public Joint get(String name) {
-        return boneMap.get(name);
+        return jointMap.get(name);
     }
 
     public Joint get(int id) {
-        if (id > boneArray.length)
-            throw new RuntimeException("Animation is referencing bones which are out of bounds. Model is missing bone " + id);
-        return boneArray[id];
+        return joints[id];
     }
 
     public String getName(int id) {
         var bone = get(id);
-        for (var entry : boneMap.entrySet()) if (entry.getValue().equals(bone)) return entry.getKey();
+        for (var entry : jointMap.entrySet()) if (entry.getValue().equals(bone)) return entry.getKey();
         return "";
     }
 
-    public int getId(Joint bone) {
-        for (int i = 0; i < boneArray.length; i++)
-            if (bone.equals(boneArray[i])) return i;
+    public int getId(Bone bone) {
+        for (int i = 0; i < bones.length; i++)
+            if (bone.equals(bones[i])) return i;
 
         return 0;
+    }
+
+    public void link(Bone[] bones) {
+        if (this.bones == null) {
+            this.bones = bones;
+
+            for (var bone : bones) {
+                if (!boneMap.containsKey(bone.name)) boneMap.put(bone.name, bone);
+            }
+        }
+        else {
+        }
+    }
+
+    public Bone getBone(String name) {
+        return boneMap.get(name);
     }
 }

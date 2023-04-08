@@ -5,6 +5,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -55,7 +56,7 @@ public class Animation {
     }
 
     public Matrix4f[] getFrameTransform(double secondsPassed) {
-        var boneTransforms = new Matrix4f[this.skeleton.boneArray.length];
+        var boneTransforms = new Matrix4f[this.skeleton.bones.length];
         readNodeHierarchy(getAnimationTime(secondsPassed), skeleton.rootNode, new Matrix4f().identity(), boneTransforms);
         return boneTransforms;
     }
@@ -63,31 +64,29 @@ public class Animation {
     public void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
         var nodeTransform = node.transform;
-        if (node.id == -1) node.id = nodeIdMap.getOrDefault(name, -1);
-        var bone = skeleton.get(name);
+        var id = nodeIdMap.getOrDefault(name, -1);
+        var bone = skeleton.getBone(name);
 
-        if (node.id != -1) {
-            var animNode = animationNodes[node.id];
+        if (id != -1) {
+            var animNode = animationNodes[id];
 
             if (animNode != null) {
                 var scale = AnimationMath.calcInterpolatedScaling(animTime, animNode);
                 var rotation = AnimationMath.calcInterpolatedRotation(animTime, animNode);
                 var translation = AnimationMath.calcInterpolatedPosition(animTime, animNode);
                 nodeTransform.identity().translationRotateScale(translation, rotation, scale);
-                if (bone != null && !Float.isNaN(nodeTransform.m00()))
-                    lastSuccessfulTransforms.put(bone, new Matrix4f(nodeTransform));
+
+                if (!Float.isNaN(nodeTransform.m00()))
+                    lastSuccessfulTransforms.put(node, new Matrix4f(nodeTransform));
             }
-        } else if (bone != null) {
-            nodeTransform.identity().mul(node.transform);
         }
 
         var globalTransform = parentTransform.mul(nodeTransform, new Matrix4f());
         if (bone != null) {
-            int transformId = skeleton.getId(bone);
             if (Float.isNaN(globalTransform.m00()))
-                globalTransform = parentTransform.mul(lastSuccessfulTransforms.getOrDefault(bone, new Matrix4f()), new Matrix4f());
+                globalTransform = parentTransform.mul(lastSuccessfulTransforms.getOrDefault(node, new Matrix4f()), new Matrix4f());
 
-            boneTransforms[transformId] = globalTransform.mul(bone.transform, new Matrix4f());
+            boneTransforms[skeleton.getId(bone)] = bone.inverseBindMatrix.mul(globalTransform, new Matrix4f());
         }
 
         for (var child : node.children)
@@ -95,7 +94,7 @@ public class Animation {
     }
 
     private AnimationNode[] fillAnimationNodesTrinity(com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation) {
-        var animationNodes = new AnimationNode[skeleton.boneMap.size()]; // BoneGroup
+        var animationNodes = new AnimationNode[skeleton.jointMap.size()]; // BoneGroup
 
         for (int i = 0; i < rawAnimation.anim().bonesLength(); i++) {
             var boneAnim = rawAnimation.anim().bones(i);

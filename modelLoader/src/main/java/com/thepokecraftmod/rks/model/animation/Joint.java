@@ -12,7 +12,6 @@ public class Joint {
     public final Joint parent;
     public final Matrix4f transform;
     public final List<Joint> children = new ArrayList<>();
-    public int id = -1;
 
     private Joint(AINode aiNode, Joint parent) {
         this.name = aiNode.mName().dataString();
