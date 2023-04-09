@@ -33,13 +33,18 @@
     "shiny": [
       {
         "type": "set_texture",
-        "material": "body",
+        "material": "body_a",
         "textureType": "albedo",
         "texture": {
-          "layers": [
-            "body_shiny_alb.jxl",
-            "body_shiny_alb_overlay.jxl"
-          ]
+          "layers": ["body_a_shiny_alb.jxl"]
+        }
+      },
+      {
+        "type": "set_texture",
+        "material": "body_b",
+        "textureType": "albedo",
+        "texture": {
+          "layers": ["body_b_shiny_alb.jxl"]
         }
       }
     ]

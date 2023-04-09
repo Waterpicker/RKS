@@ -55,7 +55,7 @@ public class PokemonTest {
 
         var material = new MaterialUploader(model, locator, s -> shader);
 
-        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -1.5f, 2f).rotateX(-90), materialName -> uploadUniforms(materialName, material));
+        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -0.2f, -0.2f).rotateX(-90), materialName -> uploadUniforms(materialName, material));
         RKS.objectManager.add(object, instance);
 
         instance.currentAnimation = new AnimationInstance(object.objects.get(0).animations.get("idle"));
