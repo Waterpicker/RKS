@@ -4,6 +4,7 @@ import com.thepokecraftmod.rks.Pair;
 import com.thepokecraftmod.rks.draw.MeshDrawCommand;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
+import com.thepokecraftmod.rks.model.animation.Skeleton;
 import com.thepokecraftmod.rks.model.bone.Bone;
 import com.thepokecraftmod.rks.scene.AnimatedMeshObject;
 import com.thepokecraftmod.rks.scene.MeshObject;
@@ -146,7 +147,7 @@ public class ExampleModelLoader {
             bindArrayBuffer(normalBuffer);
             vertexAttribPointer(2, 3);
 
-            var jointWeightData = generateJointWeightData(mesh);
+            var jointWeightData = generateJointWeightData(mesh, model.skeleton());
 
             // Joints
             var jointBuffer = MemoryUtil.memAllocFloat(jointWeightData.a().size() * 4);
@@ -195,7 +196,7 @@ public class ExampleModelLoader {
         return mro;
     }
 
-    private static Pair<List<Vector4f>, List<Vector4f>> generateJointWeightData(Mesh mesh) {
+    private static Pair<List<Vector4f>, List<Vector4f>> generateJointWeightData(Mesh mesh, Skeleton skeleton) {
         var dataSize = 4 * 2;
         var data = new float[mesh.positions().size() * dataSize];
         var bone_index_map0 = new HashMap<Integer, Integer>();
@@ -203,26 +204,27 @@ public class ExampleModelLoader {
 
         for (var boneId = 0; boneId < mesh.bones().size(); boneId++) {
             var bone = Objects.requireNonNull(mesh.bones().get(boneId));
+            var joinedBoneId = skeleton.getId(bone); // gets the global bone id instead of using the meshes bone id
 
             for (int weightId = 0; weightId < bone.weights.length; weightId++) {
-                Bone.VertexWeight weight = bone.weights[weightId];
+                var weight = bone.weights[weightId];
                 int vertId = weight.vertexId;
                 int pVertex = vertId * dataSize; // pointer to where a vertex starts in the array.
 
                 if (!bone_index_map0.containsKey(vertId)) {
-                    data[(pVertex)] = boneId;
+                    data[(pVertex)] = joinedBoneId;
                     data[(pVertex) + 2] = weight.weight;
                     bone_index_map0.put(vertId, 0);
                 } else if (bone_index_map0.get(vertId) == 0) {
-                    data[(pVertex) + 1] = boneId;
+                    data[(pVertex) + 1] = joinedBoneId;
                     data[(pVertex) + 3] = weight.weight;
                     bone_index_map0.put(vertId, 1);
                 } else if (!bone_index_map1.containsKey(vertId)) {
-                    data[(pVertex) + 4] = boneId;
+                    data[(pVertex) + 4] = joinedBoneId;
                     data[(pVertex) + 6] = weight.weight;
                     bone_index_map1.put(vertId, 0);
                 } else if (bone_index_map1.get(vertId) == 0) {
-                    data[(pVertex) + 5] = boneId;
+                    data[(pVertex) + 5] = joinedBoneId;
                     data[(pVertex) + 7] = weight.weight;
                     bone_index_map1.put(vertId, 1);
                 } else {

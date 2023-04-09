@@ -1,11 +1,14 @@
 package com.thepokecraftmod.rks.model.bone;
 
-import com.thepokecraftmod.rks.model.animation.Joint;
+import com.thepokecraftmod.rks.model.animation.BoneNode;
 import org.joml.Matrix4f;
 import org.lwjgl.assimp.AIBone;
 
 import java.util.Objects;
 
+/**
+ * We re-use this structure for multiple meshes so if you are accessing this value from outside a meshes bone array do NOT trust it.
+ */
 public class Bone {
 
     public String name;
@@ -17,9 +20,14 @@ public class Bone {
         return "Bone{" + "name='" + name + '\'' + '}';
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
     public static Bone from(AIBone bone) {
         var b = new Bone();
-        b.inverseBindMatrix = Joint.from(bone.mOffsetMatrix());
+        b.inverseBindMatrix = BoneNode.from(bone.mOffsetMatrix());
         b.name = bone.mName().dataString();
 
         var aiWeights = Objects.requireNonNull(bone.mWeights());

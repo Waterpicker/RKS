@@ -1,24 +1,32 @@
 {
   "shadingMethod": "pokemon",
   "materials": {
-    "body": {
-      "diffuse": [
-        "body_alb.jxl",
-        "body_alb_overlay.jxl"
+    "body_a": {
+      "albedo": ["body_a_alb.jxl"],
+      "normal": [
+        "body_a_nrm.jxl",
+        "body_a_nrm_overlay.jxl"
       ],
-      "normal": ["body_nrm.jxl"],
-      "roughness": ["body_rgn.jxl"],
-      "ao": ["body_ao.jxl"]
+      "metallic": ["body_a_mtl.jxl"],
+      "roughness": ["body_a_rgn.jxl"],
+      "ao": ["body_a_ao.jxl"],
+      "emission": ["body_a_emi.jxl"]
     },
-    "l_eye": {
-      "diffuse": [
-        "eye_alb.jxl"
-      ]
+    "body_b": {
+      "albedo": ["body_b_alb.jxl"],
+      "normal": [
+        "body_b_nrm.jxl",
+        "body_b_nrm_overlay.jxl"
+      ],
+      "metallic": ["body_b_mtl.jxl"],
+      "roughness": ["body_b_rgn.jxl"],
+      "ao": ["body_b_ao.jxl"]
     },
-    "r_eye": {
-      "diffuse": [
-        "eye_alb.jxl"
-      ]
+
+    "eyes": {
+      "albedo": ["eye_alb.jxl"],
+      "normal": ["eye_nrm.jxl"],
+      "emission": ["eye_alb.jxl"]
     }
   },
   "variants": {
@@ -26,7 +34,7 @@
       {
         "type": "set_texture",
         "material": "body",
-        "textureType": "diffuse",
+        "textureType": "albedo",
         "texture": {
           "layers": [
             "body_shiny_alb.jxl",

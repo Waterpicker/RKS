@@ -13,7 +13,6 @@ import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11C;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class BRDFTest {
                 .shader(getResource("shaders/brdf.vsh"), getResource("shaders/brdf.fsh"))
                 .uniform(new UniformBlockReference("SharedInfo", 0))
                 .uniform(new UniformBlockReference("InstanceInfo", 1))
-                .texture(TextureType.DIFFUSE)
+                .texture(TextureType.ALBEDO)
                 .texture(TextureType.NORMALS)
                 .texture(TextureType.METALNESS)
                 .texture(TextureType.ROUGHNESS)
@@ -39,7 +38,7 @@ public class BRDFTest {
 
 
         var locator = new ResourceCachedFileLocator();
-        var model = AssimpModelLoader.load("testmodel/model.gltf", locator, 0x40);// genNormals
+        var model = AssimpModelLoader.load("testModels/seviper/model.gltf", locator, 0x40);// genNormals
         var object = ExampleModelLoader.loadMeshes(model);
         for (var meshObject : object.objects) meshObject.setup(shader);
 

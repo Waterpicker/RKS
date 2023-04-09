@@ -31,8 +31,7 @@ public record Shader(
         return uniformLocationCache.computeIfAbsent(name, s -> GL20C.glGetUniformLocation(program, s));
     }
 
-    public void uploadInt(String name, int value) {
-        int loc = getUniform(name);
+    public void uploadInt(int loc, int value) {
         GL20C.glUniform1i(loc, value);
     }
 

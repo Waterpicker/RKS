@@ -6,6 +6,8 @@ import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
 import com.thepokecraftmod.rks.texture.Gpu2DTexture;
+import org.lwjgl.opengl.GL13C;
+import org.lwjgl.opengl.GL20C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ public class MaterialUploader {
                 var texture = meshMaterial.getTextures(type);
 
                 if (texture.size() < 1) LOGGER.debug("Shader expects " + type + " but the texture is missing");
-                else upload(material, type, mergeAndLoad(model, locator, meshMaterial.getTextures(type)));
+                else upload(material, type, mergeAndLoad(model, locator, texture));
             }
 
             materials.put(name, material);
@@ -108,22 +110,42 @@ public class MaterialUploader {
             return;
         }
 
+        // Clear any existing data
+        var unusedTexturesInShader = material.shader.texturesUsed().stream()
+                .filter(textureType -> !material.typeMap.containsValue(textureType))
+                .toList();
+
+        for (var type : unusedTexturesInShader) {
+            var loc = switch (type) {
+                case ALBEDO -> 0;
+                case NORMALS -> 1;
+                case ROUGHNESS -> 2;
+                case METALNESS -> 3;
+                case AMBIENT_OCCLUSION -> 4;
+                case EMISSIVE -> 5;
+                default -> throw new IllegalStateException("Unexpected value: " + type);
+            };
+
+            material.shader.uploadInt(loc, 16);
+        }
+
         // Update Uniforms
         for (var texture : material.textures) {
             var slot = material.slotMap.get(texture);
             var type = material.typeMap.get(texture);
 
-            var uniformName = switch (type) {
-                case DIFFUSE -> "albedo";
-                case NORMALS -> "normal";
-                case ROUGHNESS -> "roughness";
-                case METALNESS -> "metallic";
-                case AMBIENT_OCCLUSION -> "ao";
+            var loc = switch (type) {
+                case ALBEDO -> 0;
+                case NORMALS -> 1;
+                case METALNESS -> 2;
+                case ROUGHNESS -> 3;
+                case AMBIENT_OCCLUSION -> 4;
+                case EMISSIVE -> 5;
                 default -> throw new IllegalStateException("Unexpected value: " + type);
             };
 
             texture.bind(slot);
-            material.shader.uploadInt(uniformName, slot);
+            material.shader.uploadInt(loc, slot);
         }
     }
 

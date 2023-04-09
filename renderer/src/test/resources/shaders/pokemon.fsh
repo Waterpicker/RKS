@@ -1,4 +1,5 @@
 #version 330 core
+#extension GL_ARB_explicit_uniform_location : enable
 #pragma optionNV(strict on)
 
 in VS_OUT {
@@ -9,11 +10,12 @@ in VS_OUT {
 
 out vec4 outColor;
 
-uniform sampler2D albedo;
-uniform sampler2D normal;
-uniform sampler2D metallic;
-uniform sampler2D roughness;
-uniform sampler2D ao;
+layout (location = 0) uniform sampler2D albedo;
+layout (location = 1) uniform sampler2D normal;
+layout (location = 2) uniform sampler2D metallic;
+layout (location = 3) uniform sampler2D roughness;
+layout (location = 4) uniform sampler2D ao;
+layout (location = 5) uniform sampler2D emission;
 
 uniform vec3 camPos;
 uniform vec3 lightPositions[4];
@@ -60,9 +62,15 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 void main() {
     vec3 albedoColor = pow(texture(albedo, fsIn.uv).rgb, vec3(2.2));
     vec3 normalVector = texture(normal, fsIn.uv).rgb;
-    float metallicValue = texture(metallic, fsIn.uv).r;
-    float roughnessValue = texture(roughness, fsIn.uv).g + 0.3;
+    float metallicValue = texture(metallic, fsIn.uv).r * 1.2;
+    float roughnessValue = texture(roughness, fsIn.uv).g * 1.2;
     float aoValue = texture(ao, fsIn.uv).b;
+    float emissionValue = texture(emission, fsIn.uv).r;
+
+    if (emissionValue > 0) {
+        outColor = texture(albedo, fsIn.uv);
+        return;
+    }
 
     vec3 N = normalize(fsIn.normal);
     vec3 V = normalize(camPos - fsIn.pos);
@@ -104,7 +112,7 @@ void main() {
 
     // HDR tonemapping and gamma correction
     color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2));
+    color = pow(color, vec3(1.0 / 2.2));
 
     outColor = vec4(color, 1.0);
 }

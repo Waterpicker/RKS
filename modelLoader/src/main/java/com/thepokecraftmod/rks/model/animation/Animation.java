@@ -5,7 +5,6 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +16,7 @@ public class Animation {
     public final AnimationNode[] animationNodes;
     public float ticksPerSecond;
     public final Skeleton skeleton;
-    public Map<Joint, Matrix4f> lastSuccessfulTransforms = new HashMap<>();
+    public Map<BoneNode, Matrix4f> lastSuccessfulTransforms = new HashMap<>();
     public boolean ignoreInstancedTime = false;
 
     public Animation(String name, com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation, Skeleton skeleton) {
@@ -61,14 +60,13 @@ public class Animation {
         return boneTransforms;
     }
 
-    public void readNodeHierarchy(float animTime, Joint node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
+    public void readNodeHierarchy(float animTime, BoneNode node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
         var nodeTransform = node.transform;
-        var id = nodeIdMap.getOrDefault(name, -1);
-        var bone = skeleton.getBone(name);
 
-        if (id != -1) {
-            var animNode = animationNodes[id];
+        var animationNodeId = nodeIdMap.getOrDefault(name, -1);
+        if (animationNodeId != -1) {
+            var animNode = animationNodes[animationNodeId];
 
             if (animNode != null) {
                 var scale = AnimationMath.calcInterpolatedScaling(animTime, animNode);
@@ -76,17 +74,19 @@ public class Animation {
                 var translation = AnimationMath.calcInterpolatedPosition(animTime, animNode);
                 nodeTransform.identity().translationRotateScale(translation, rotation, scale);
 
-                if (!Float.isNaN(nodeTransform.m00()))
+                if (!Float.isNaN(nodeTransform.m00())) {
                     lastSuccessfulTransforms.put(node, new Matrix4f(nodeTransform));
+                }
             }
         }
 
         var globalTransform = parentTransform.mul(nodeTransform, new Matrix4f());
+        var bone = skeleton.getBone(name);
         if (bone != null) {
             if (Float.isNaN(globalTransform.m00()))
                 globalTransform = parentTransform.mul(lastSuccessfulTransforms.getOrDefault(node, new Matrix4f()), new Matrix4f());
 
-            boneTransforms[skeleton.getId(bone)] = bone.inverseBindMatrix.mul(globalTransform, new Matrix4f());
+            boneTransforms[skeleton.getId(bone)] = globalTransform.mul(bone.inverseBindMatrix, new Matrix4f());
         }
 
         for (var child : node.children)
@@ -94,7 +94,7 @@ public class Animation {
     }
 
     private AnimationNode[] fillAnimationNodesTrinity(com.thepokecraftmod.rks.model.animation.tranm.Animation rawAnimation) {
-        var animationNodes = new AnimationNode[skeleton.jointMap.size()]; // BoneGroup
+        var animationNodes = new AnimationNode[skeleton.nodes.length]; // BoneGroup
 
         for (int i = 0; i < rawAnimation.anim().bonesLength(); i++) {
             var boneAnim = rawAnimation.anim().bones(i);

@@ -35,11 +35,8 @@ public class AnimatedObjectInstance extends ObjectInstance {
             var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * boneCount);
             var transforms = getTransforms();
             for (int i = 0; i < transforms.length; i++) {
-                if(transforms[i] == null) {
-                    System.out.println("ok");
-                } else {
+                if(transforms[i] != null)
                     transforms[i].getToAddress(pAnimTransforms + (long) i * MAT4F_SIZE);
-                }
             }
 
             upload(MAT4F_SIZE, MAT4F_SIZE * boneCount, pAnimTransforms);

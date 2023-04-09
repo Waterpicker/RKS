@@ -51,7 +51,7 @@ public class AnimationInstance {
     }
 
     protected Matrix4f[] getFrameTransform(AnimationInstance instance) {
-        var boneTransforms = new Matrix4f[animation.skeleton.joints.length];
+        var boneTransforms = new Matrix4f[animation.skeleton.nodes.length];
         animation.readNodeHierarchy(instance.getCurrentTime(), animation.skeleton.rootNode, new Matrix4f().identity(), boneTransforms);
         return boneTransforms;
     }

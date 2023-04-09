@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-allprojects {
+subprojects {
     apply plugin: "java"
     apply plugin: "maven-publish"
     apply plugin: "com.github.johnrengelman.shadow"
@@ -37,6 +37,18 @@ allprojects {
 
         runtimeOnly 'org.slf4j:slf4j-simple:2.0.7'
         runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    }
+
+    publishing {
+        publications {
+            myLib(MavenPublication) {
+                from components.java
+            }
+        }
+
+        repositories {
+            mavenLocal()
+        }
     }
 
     tasks.withType(JavaCompile).configureEach {

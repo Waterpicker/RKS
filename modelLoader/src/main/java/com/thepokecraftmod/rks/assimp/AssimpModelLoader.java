@@ -3,7 +3,7 @@ package com.thepokecraftmod.rks.assimp;
 import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
-import com.thepokecraftmod.rks.model.animation.Joint;
+import com.thepokecraftmod.rks.model.animation.BoneNode;
 import com.thepokecraftmod.rks.model.animation.Skeleton;
 import com.thepokecraftmod.rks.model.bone.Bone;
 import com.thepokecraftmod.rks.model.extra.ModelConfig;
@@ -14,6 +14,8 @@ import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
@@ -63,10 +65,10 @@ public class AssimpModelLoader {
 
     private static Model readScene(AIScene scene, String fullPath, FileLocator locator) {
         var rootPath = fullPath.replace("\\", "/").substring(0, fullPath.lastIndexOf("/"));
-        var skeleton = new Skeleton(Joint.create(scene.mRootNode()));
+        var skeleton = new Skeleton(BoneNode.create(scene.mRootNode()));
         var config = readConfig(rootPath, locator);
         var materials = readMaterialData(scene);
-        var meshes = readMeshData(skeleton, scene);
+        var meshes = readMeshData(skeleton, scene, new HashMap<>());
         return new Model(rootPath, materials, meshes, skeleton, config);
     }
 
@@ -76,7 +78,7 @@ public class AssimpModelLoader {
         return ModelConfig.GSON.fromJson(json, ModelConfig.class);
     }
 
-    private static Mesh[] readMeshData(Skeleton skeleton, AIScene scene) {
+    private static Mesh[] readMeshData(Skeleton skeleton, AIScene scene, Map<String, Bone> boneMap) {
         var meshes = new Mesh[scene.mNumMeshes()];
 
         for (int i = 0; i < scene.mNumMeshes(); i++) {
@@ -127,13 +129,15 @@ public class AssimpModelLoader {
                     var aiBone = AIBone.create(aiBones.get(j));
                     var bone = Bone.from(aiBone);
                     bones.add(bone);
+                    boneMap.put(bone.name, bone);
                 }
             }
 
-            skeleton.link(bones.toArray(Bone[]::new));
+            skeleton.store(bones.toArray(Bone[]::new));
             meshes[i] = new Mesh(name, material, indices, positions, uvs, normals, bones);
         }
 
+        skeleton.calculateBoneData();
         return meshes;
     }
 

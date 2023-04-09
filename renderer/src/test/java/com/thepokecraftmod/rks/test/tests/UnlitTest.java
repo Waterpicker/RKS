@@ -11,7 +11,6 @@ import com.thepokecraftmod.rks.test.load.MaterialUploader;
 import com.thepokecraftmod.rks.test.load.ResourceCachedFileLocator;
 import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
-import com.thepokecraftmod.rks.texture.Gpu2DTexture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11C;
@@ -30,12 +29,12 @@ public class UnlitTest {
                 .shader(getResource("shaders/unlit.vsh"), getResource("shaders/unlit.fsh"))
                 .uniform(new UniformBlockReference("SharedInfo", 0))
                 .uniform(new UniformBlockReference("InstanceInfo", 1))
-                .texture(TextureType.DIFFUSE)
+                .texture(TextureType.ALBEDO)
                 .build();
 
 
         var locator = new ResourceCachedFileLocator();
-        var model = AssimpModelLoader.load("testmodel/model.gltf", locator, 0);
+        var model = AssimpModelLoader.load("testModels/seviper/model.gltf", locator, 0);
         var object = ExampleModelLoader.loadMeshes(model);
         for (var meshObject : object.objects) meshObject.setup(shader);
 

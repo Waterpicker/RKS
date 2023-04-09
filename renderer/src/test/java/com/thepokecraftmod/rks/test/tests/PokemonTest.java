@@ -16,41 +16,46 @@ import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11C;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 
 public class PokemonTest {
-    private static final Window WINDOW = new Window("Pokemon Test", 1920, 1080, false, true);
+    private static final Window WINDOW = new Window("Pokemon Test", 1920, 1080, true, true);
     private static final long START_TIME = System.currentTimeMillis();
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
     private static final RKS RKS = new RKS();
+    private static double lastFrameTime;
 
     public static void main(String[] args) {
         var shader = new Shader.Builder()
                 .shader(getResource("shaders/pokemon.vsh"), getResource("shaders/pokemon.fsh"))
                 .uniform(new UniformBlockReference("SharedInfo", 0))
                 .uniform(new UniformBlockReference("InstanceInfo", 1))
-                .texture(TextureType.DIFFUSE)
+                .texture(TextureType.ALBEDO)
                 .texture(TextureType.NORMALS)
                 .texture(TextureType.METALNESS)
                 .texture(TextureType.ROUGHNESS)
                 .texture(TextureType.AMBIENT_OCCLUSION)
+                .texture(TextureType.EMISSIVE)
                 .build();
 
 
         var locator = new ResourceCachedFileLocator();
-        var model = AssimpModelLoader.load("testmodel/model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
+        var model = AssimpModelLoader.load("testModels/fallback/model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
         var object = ExampleModelLoader.loadAnimatedMeshes(model);
-        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(locator, "testmodel", model.skeleton()));
+        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(locator, "testModels/fallback", model.skeleton()));
 
         var material = new MaterialUploader(model, locator, s -> shader);
 
-        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -1, -80f), materialName -> uploadUniforms(materialName, material));
+        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -1.5f, 2f).rotateX(-90), materialName -> uploadUniforms(materialName, material));
         RKS.objectManager.add(object, instance);
 
         instance.currentAnimation = new AnimationInstance(object.objects.get(0).animations.get("idle"));
@@ -58,38 +63,44 @@ public class PokemonTest {
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
             SHARED.update();
-            instance.transformationMatrix.identity().rotateXYZ(new Vector3f(0, WINDOW.getCursorX() / 100, 0));
+            instance.transformationMatrix.rotateZ((float) ((GLFW.glfwGetTime() - lastFrameTime) * 10f));
             GL11C.glClearColor(0, 0, 0, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
             RKS.render((System.currentTimeMillis() - START_TIME) / 1000d);
             WINDOW.swapBuffers();
+            lastFrameTime = GLFW.glfwGetTime();
         }
     }
 
     private static Map<String, Animation> loadAnimations(ResourceCachedFileLocator locator, String path, Skeleton skeleton) {
-        var pAnimation = ByteBuffer.wrap(locator.getFile(path + "/pm0336_00_00_00000_defaultwait01_loop.tranm"));
-        var trAnimation = com.thepokecraftmod.rks.model.animation.tranm.Animation.getRootAsAnimation(pAnimation);
-        var animation = new Animation("idle", trAnimation, skeleton);
-        return Map.of("idle", animation);
+        try {
+            var pAnimation = ByteBuffer.wrap(Files.readAllBytes(Paths.get("F:/NewAttempt/ScarletViolet/pokemon/data/pm9999/pm9999_00_00/pm9999_00_00_20000_defaultwait01_loop.gfbanm")));
+            var trAnimation = com.thepokecraftmod.rks.model.animation.tranm.Animation.getRootAsAnimation(pAnimation);
+            var animation = new Animation("idle", trAnimation, skeleton);
+            return Map.of("idle", animation);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void uploadUniforms(String materialName, MaterialUploader uploader) {
         var shader = uploader.materials.get(materialName).shader;
-        var lightStrength = 20000.0f;
-        shader.uploadVec3f("camPos", new Vector3f(0f, 0f, -1));
+        var color = 255.0f;
+        var distance = 5;
+        shader.uploadVec3f("camPos", new Vector3f(0.1f, 0f, -1));
         shader.uploadVec3fs(
                 "lightPositions",
-                new Vector3f(-100.0f, 100.0f, 100.0f),
-                new Vector3f(100.0f, 100.0f, 100.0f),
-                new Vector3f(-100.0f, -100.0f, 100.0f),
-                new Vector3f(100.0f, -100.0f, 100.0f)
+                new Vector3f(-distance, distance, -distance),
+                new Vector3f(distance, distance, -distance),
+                new Vector3f(-distance, -distance, -distance),
+                new Vector3f(distance, -distance, -distance)
         );
         shader.uploadVec3fs(
                 "lightColors",
-                new Vector3f(lightStrength, lightStrength, lightStrength),
-                new Vector3f(lightStrength, lightStrength, lightStrength),
-                new Vector3f(lightStrength, lightStrength, lightStrength),
-                new Vector3f(lightStrength, lightStrength, lightStrength)
+                new Vector3f(color, color, color),
+                new Vector3f(color, color, color),
+                new Vector3f(color, color, color),
+                new Vector3f(color, color, color)
         );
         uploader.handle(materialName);
     }

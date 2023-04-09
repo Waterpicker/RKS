@@ -7,19 +7,19 @@ import org.lwjgl.assimp.AINode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Joint {
+public class BoneNode {
     public final String name;
-    public final Joint parent;
+    public final BoneNode parent;
     public final Matrix4f transform;
-    public final List<Joint> children = new ArrayList<>();
+    public final List<BoneNode> children = new ArrayList<>();
 
-    private Joint(AINode aiNode, Joint parent) {
+    private BoneNode(AINode aiNode, BoneNode parent) {
         this.name = aiNode.mName().dataString();
         this.parent = parent;
         this.transform = from(aiNode.mTransformation());
 
         for (int i = 0; i < aiNode.mNumChildren(); i++)
-            children.add(new Joint(AINode.create(aiNode.mChildren().get(i)), this));
+            children.add(new BoneNode(AINode.create(aiNode.mChildren().get(i)), this));
     }
 
     @Override
@@ -27,11 +27,11 @@ public class Joint {
         return "Joint{" + "name='" + name + '\'' + '}';
     }
 
-    public static Joint create(AINode aiRoot) {
-        return new Joint(aiRoot, null);
+    public static BoneNode create(AINode aiRoot) {
+        return new BoneNode(aiRoot, null);
     }
 
-    private static void populateJoints(Joint joint, ArrayList<Joint> jointList) {
+    private static void populateJoints(BoneNode joint, ArrayList<BoneNode> jointList) {
         jointList.add(joint);
         for (var child : joint.children) populateJoints(child, jointList);
     }

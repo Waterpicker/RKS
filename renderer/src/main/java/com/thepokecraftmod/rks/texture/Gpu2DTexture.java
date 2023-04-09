@@ -59,6 +59,6 @@ public class Gpu2DTexture {
 
     public void bind(int slot) {
         GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + slot);
-        GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, this.id);
+        GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, id);
     }
 }
