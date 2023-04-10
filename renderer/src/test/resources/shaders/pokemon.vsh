@@ -9,9 +9,9 @@ layout (location = 3) in vec4 inJoints;
 layout (location = 4) in vec4 inWeights;
 
 out VS_OUT {
-    out vec3 pos;
-    out vec2 uv;
-    out vec3 normal;
+    vec3 pos;
+    vec2 uv;
+    vec3 normal;
 } vsOut;
 
 layout (std140) uniform SharedInfo {

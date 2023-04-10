@@ -10,13 +10,8 @@ public class RKS {
     public final ObjectManager objectManager = new ObjectManager();
 
     public RKS() {
-        try {
-            GL.getCapabilities();
-            var startLoad = System.currentTimeMillis();
-            LOGGER.info("RKS Setup Time: " + (System.currentTimeMillis() - startLoad) + "ms");
-        } catch (IllegalStateException e) {
-            throw new RuntimeException("RKS Started without OpenGL Context");
-        }
+        var startLoad = System.currentTimeMillis();
+        LOGGER.info("RKS Setup Time: " + (System.currentTimeMillis() - startLoad) + "ms");
     }
 
     public void render(double secondsPassed) {

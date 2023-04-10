@@ -1,5 +1,7 @@
 {
   "shadingMethod": "pokemon",
+  "emissionIntensity": 0.3,
+  "hiddenMeshes": [],
   "materials": {
     "body_a": {
       "albedo": ["body_a_alb.jxl"],
