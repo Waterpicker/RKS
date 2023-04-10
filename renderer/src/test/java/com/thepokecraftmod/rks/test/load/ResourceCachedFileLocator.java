@@ -20,12 +20,15 @@ public class ResourceCachedFileLocator implements FileLocator {
     private final Map<String, byte[]> fileCache = new HashMap<>();
     private String root;
 
+    public ResourceCachedFileLocator(String root) {
+        this.root = "/" + root;
+    }
+
     @Override
     public byte[] getFile(String name) {
         return fileCache.computeIfAbsent(name, s -> {
             try {
-                var parent = getParent(name);
-                var cleanString = parent + s.replace("\\", "/").replace("//", "/");
+                var cleanString = root + "/" + s.replace("\\", "/").replace("//", "/");
                 var is = ResourceCachedFileLocator.class.getResourceAsStream(cleanString);
                 return Objects.requireNonNull(is, "Unable to find resource " + cleanString).readAllBytes();
             } catch (IOException e) {
@@ -57,8 +60,7 @@ public class ResourceCachedFileLocator implements FileLocator {
     @Override
     public BufferedImage readImage(String name) {
         try {
-            var parent = getParent(name);
-            var cleanString = parent + name.replace("\\", "/").replace("//", "/");
+            var cleanString = root + "/" + name.replace("\\", "/").replace("//", "/");
             var is = Objects.requireNonNull(ResourceCachedFileLocator.class.getResourceAsStream(cleanString), "Texture InputStream is null");
             var image = cleanString.endsWith(".jxl") ? read(is.readAllBytes()) : ImageIO.read(is);
             int height = image.getHeight();
@@ -82,13 +84,5 @@ public class ResourceCachedFileLocator implements FileLocator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String getParent(String fileName) {
-        if (fileName.endsWith(".gltf") && fileName.contains("/")) {
-            this.root = fileName.substring(0, fileName.lastIndexOf("/"));
-            return "/";
-        } else if (!fileName.contains(root)) return "/" + root + "/";
-        else return "/";
     }
 }

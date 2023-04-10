@@ -48,10 +48,10 @@ public class PokemonTest {
                 .build();
 
 
-        var locator = new ResourceCachedFileLocator();
-        var model = AssimpModelLoader.load("testModels/fallback/model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
+        var locator = new ResourceCachedFileLocator("testModels/fallback");
+        var model = AssimpModelLoader.load("model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
         var object = ExampleModelLoader.loadAnimatedMeshes(model);
-        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(locator, "testModels/fallback", model.skeleton()));
+        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(model.skeleton()));
 
         var material = new MaterialUploader(model, locator, s -> shader);
 
@@ -72,7 +72,7 @@ public class PokemonTest {
         }
     }
 
-    private static Map<String, Animation> loadAnimations(ResourceCachedFileLocator locator, String path, Skeleton skeleton) {
+    private static Map<String, Animation> loadAnimations(Skeleton skeleton) {
         try {
             var pAnimation = ByteBuffer.wrap(Files.readAllBytes(Paths.get("F:/NewAttempt/ScarletViolet/pokemon/data/pm9999/pm9999_00_00/pm9999_00_00_20000_defaultwait01_loop.gfbanm")));
             var trAnimation = com.thepokecraftmod.rks.model.animation.tranm.Animation.getRootAsAnimation(pAnimation);

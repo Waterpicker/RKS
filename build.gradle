@@ -9,7 +9,7 @@ subprojects {
     apply plugin: "maven-publish"
     apply plugin: "com.github.johnrengelman.shadow"
 
-    version = '1.0.2'
+    version = '1.0.3'
     group = 'com.thepokecraftmod'
     project.ext.lwjglVersion = "3.3.2"
     project.ext.jomlVersion = "1.10.5"

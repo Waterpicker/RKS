@@ -33,8 +33,8 @@ public class UnlitTest {
                 .build();
 
 
-        var locator = new ResourceCachedFileLocator();
-        var model = AssimpModelLoader.load("testModels/seviper/model.gltf", locator, 0);
+        var locator = new ResourceCachedFileLocator("testModels/seviper");
+        var model = AssimpModelLoader.load("model.gltf", locator, 0);
         var object = ExampleModelLoader.loadMeshes(model);
         for (var meshObject : object.objects) meshObject.setup(shader);
 

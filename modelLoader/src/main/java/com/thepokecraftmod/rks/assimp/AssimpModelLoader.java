@@ -58,23 +58,21 @@ public class AssimpModelLoader {
 
         var scene = Assimp.aiImportFileEx(name, Assimp.aiProcess_Triangulate | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_ImproveCacheLocality | extraFlags, fileIo);
         if (scene == null) throw new RuntimeException(Assimp.aiGetErrorString());
-        var result = readScene(scene, name, locator);
+        var result = readScene(scene, locator);
         Assimp.aiReleaseImport(scene);
         return result;
     }
 
-    private static Model readScene(AIScene scene, String fullPath, FileLocator locator) {
-        var rootPath = fullPath.replace("\\", "/").substring(0, fullPath.lastIndexOf("/"));
+    private static Model readScene(AIScene scene, FileLocator locator) {
         var skeleton = new Skeleton(BoneNode.create(scene.mRootNode()));
-        var config = readConfig(rootPath, locator);
+        var config = readConfig(locator);
         var materials = readMaterialData(scene);
         var meshes = readMeshData(skeleton, scene, new HashMap<>());
-        return new Model(rootPath, materials, meshes, skeleton, config);
+        return new Model(materials, meshes, skeleton, config);
     }
 
-    private static ModelConfig readConfig(String fullPath, FileLocator locator) {
-        var extrasPath = fullPath + "/model.config.json";
-        var json = new String(locator.getFile(extrasPath));
+    private static ModelConfig readConfig(FileLocator locator) {
+        var json = new String(locator.getFile("model.config.json"));
         return ModelConfig.GSON.fromJson(json, ModelConfig.class);
     }
 

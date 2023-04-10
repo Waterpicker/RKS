@@ -6,8 +6,6 @@ import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
 import com.thepokecraftmod.rks.texture.Gpu2DTexture;
-import org.lwjgl.opengl.GL13C;
-import org.lwjgl.opengl.GL20C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,15 +35,15 @@ public class MaterialUploader {
                 var texture = meshMaterial.getTextures(type);
 
                 if (texture.size() < 1) LOGGER.debug("Shader expects " + type + " but the texture is missing");
-                else upload(material, type, mergeAndLoad(model, locator, texture));
+                else upload(material, type, mergeAndLoad(locator, texture));
             }
 
             materials.put(name, material);
         }
     }
 
-    private Gpu2DTexture mergeAndLoad(Model model, FileLocator locator, List<String> textures) {
-        var imageReferences = textures.stream().map(s -> model.rootPath() + "/textures/" + s).map(locator::getFile).toList();
+    private Gpu2DTexture mergeAndLoad(FileLocator locator, List<String> textures) {
+        var imageReferences = textures.stream().map(s -> "textures/" + s).map(locator::getFile).toList();
 
         var loadedImages = imageReferences.stream().map(bytes -> {
             try {

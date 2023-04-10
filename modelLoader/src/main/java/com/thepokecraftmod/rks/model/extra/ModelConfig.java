@@ -16,6 +16,7 @@ public class ModelConfig {
             .registerTypeAdapter(VariantModifier.class, new VariantModifier.Adapter())
             .create();
     public String shadingMethod;
+    public List<String> hiddenMeshes;
     public Map<String, Material> materials;
     public Map<String, List<VariantModifier>> variants;
     public List<Object> animations;
