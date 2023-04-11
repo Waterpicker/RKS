@@ -21,6 +21,22 @@ uniform vec3 lightColors[4];
 
 const float PI = 3.14159265359;
 
+vec3 getNormalFromMap(){
+    vec3 tangentNormal = texture(normal, fsIn.uv).xyz * 2.0 - 1.0;
+
+    vec3 Q1  = dFdx(fsIn.pos);
+    vec3 Q2  = dFdy(fsIn.pos);
+    vec2 st1 = dFdx(fsIn.uv);
+    vec2 st2 = dFdy(fsIn.uv);
+
+    vec3 N   = normalize(fsIn.normal);
+    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B  = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
+
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float a = roughness * roughness;
     float a2 = a * a;
@@ -64,7 +80,7 @@ void main() {
     float roughnessValue = texture(roughness, fsIn.uv).g + 0.3;
     float aoValue = texture(ao, fsIn.uv).b;
 
-    vec3 N = normalize(fsIn.normal);
+    vec3 N = getNormalFromMap();
     vec3 V = normalize(camPos - fsIn.pos);
 
     vec3 F0 = vec3(0.04);

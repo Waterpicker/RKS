@@ -16,6 +16,7 @@ public class ModelConfig {
             .registerTypeAdapter(VariantModifier.class, new VariantModifier.Adapter())
             .create();
     public String shadingMethod;
+    public TextureFilter textureFiltering = TextureFilter.LINEAR;
     public List<String> hiddenMeshes;
     public Map<String, Material> materials;
     public Map<String, List<VariantModifier>> variants;

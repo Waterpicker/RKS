@@ -3,6 +3,7 @@ package com.thepokecraftmod.rks.test.load;
 import com.thebombzen.jxlatte.imageio.JXLImageReader;
 import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Model;
+import com.thepokecraftmod.rks.model.extra.TextureFilter;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
 import com.thepokecraftmod.rks.texture.Gpu2DTexture;
@@ -23,7 +24,8 @@ public class MaterialUploader {
     public final Map<String, Material> materials = new HashMap<>();
 
     public MaterialUploader(Model model, FileLocator locator, Function<String, Shader> shaderFunction) {
-        this.blank = Gpu2DTexture.create(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), "blank");
+        var filter = model.config().textureFiltering;
+        this.blank = Gpu2DTexture.create(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), filter, "blank");
 
         for (var entry : model.config().materials.entrySet()) {
             var name = entry.getKey();
@@ -35,14 +37,14 @@ public class MaterialUploader {
                 var texture = meshMaterial.getTextures(type);
 
                 if (texture.size() < 1) LOGGER.debug("Shader expects " + type + " but the texture is missing");
-                else upload(material, type, mergeAndLoad(locator, texture));
+                else upload(material, type, mergeAndLoad(locator, filter, texture));
             }
 
             materials.put(name, material);
         }
     }
 
-    private Gpu2DTexture mergeAndLoad(FileLocator locator, List<String> textures) {
+    private Gpu2DTexture mergeAndLoad(FileLocator locator, TextureFilter filter, List<String> textures) {
         var imageReferences = textures.stream().map(s -> "textures/" + s).map(locator::getFile).toList();
 
         var loadedImages = imageReferences.stream().map(bytes -> {
@@ -90,7 +92,7 @@ public class MaterialUploader {
             }
         }
 
-        return Gpu2DTexture.create(baseImage, "test.jxl");
+        return Gpu2DTexture.create(baseImage, filter, "test.jxl");
     }
 
     private void upload(Material material, TextureType type, Gpu2DTexture texture) {

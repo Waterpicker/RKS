@@ -8,17 +8,13 @@ import java.util.List;
 
 public abstract class RenderObject {
     protected Shader shader;
-    protected boolean ready = false;
+    public boolean hidden = false;
     protected Matrix4f matrixOffset = new Matrix4f().identity();
     protected boolean disableBackfaceCull = false;
 
     public abstract void render(List<ObjectInstance> instances);
 
     public void update() {}
-
-    public boolean isReady() {
-        return ready;
-    }
 
     public void setMatrixOffset(Matrix4f mat4f) {
         matrixOffset.set(mat4f);

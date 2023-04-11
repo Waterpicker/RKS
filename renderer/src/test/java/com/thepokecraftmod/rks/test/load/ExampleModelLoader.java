@@ -5,7 +5,6 @@ import com.thepokecraftmod.rks.draw.MeshDrawCommand;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Skeleton;
-import com.thepokecraftmod.rks.model.bone.Bone;
 import com.thepokecraftmod.rks.scene.AnimatedMeshObject;
 import com.thepokecraftmod.rks.scene.MeshObject;
 import com.thepokecraftmod.rks.scene.MultiRenderObject;
@@ -88,7 +87,7 @@ public class ExampleModelLoader {
             MemoryUtil.memFree(indexBuffer);
             MemoryUtil.memFree(positionBuffer);
             MemoryUtil.memFree(uvBuffer);
-            mro.add(meshObject, false);
+            mro.add(meshObject);
         }
 
         return mro;
@@ -190,7 +189,7 @@ public class ExampleModelLoader {
             MemoryUtil.memFree(indexBuffer);
             MemoryUtil.memFree(positionBuffer);
             MemoryUtil.memFree(uvBuffer);
-            mro.add(meshObject, false);
+            mro.add(meshObject);
         }
 
         return mro;

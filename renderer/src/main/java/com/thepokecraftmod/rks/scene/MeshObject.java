@@ -18,20 +18,21 @@ public class MeshObject extends RenderObject {
 
     public void setup(Shader shader) {
         this.shader = shader;
-        this.ready = true;
     }
 
     public void render(List<ObjectInstance> instances) {
-        shader.bind();
+        if(!hidden) {
+            shader.bind();
 
-        for (var instance : instances) {
-            instance.update();
-            instance.material.updateUniforms(materialReference);
-            if (disableBackfaceCull) GL11.glDisable(GL11.GL_CULL_FACE);
-            model.runDrawCalls();
-            if (disableBackfaceCull) GL11.glEnable(GL11.GL_CULL_FACE);
+            for (var instance : instances) {
+                instance.update();
+                instance.material.updateUniforms(materialReference);
+                if (disableBackfaceCull) GL11.glDisable(GL11.GL_CULL_FACE);
+                model.runDrawCalls();
+                if (disableBackfaceCull) GL11.glEnable(GL11.GL_CULL_FACE);
+            }
+
+            shader.unbind();
         }
-
-        shader.unbind();
     }
 }

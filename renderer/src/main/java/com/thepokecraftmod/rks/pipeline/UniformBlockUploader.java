@@ -2,7 +2,9 @@ package com.thepokecraftmod.rks.pipeline;
 
 import org.lwjgl.opengl.GL33C;
 
-public abstract class UniformBlockUploader implements AutoCloseable {
+import java.io.Closeable;
+
+public abstract class UniformBlockUploader implements Closeable {
     public static final int MAT4F_SIZE = Float.BYTES * 4 * 4;
     public static final int SAMPLER2D_SIZE = Integer.BYTES;
     public static final int VEC2_SIZE = Float.BYTES * 2;

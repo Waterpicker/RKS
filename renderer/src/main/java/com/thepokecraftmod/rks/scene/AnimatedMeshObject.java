@@ -16,6 +16,5 @@ public class AnimatedMeshObject extends MeshObject {
     public void setup(Shader shader, Map<String, Animation> animations) {
         this.shader = shader;
         this.animations = animations;
-        this.ready = true;
     }
 }

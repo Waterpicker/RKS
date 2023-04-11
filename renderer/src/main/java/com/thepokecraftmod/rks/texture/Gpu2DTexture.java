@@ -1,5 +1,6 @@
 package com.thepokecraftmod.rks.texture;
 
+import com.thepokecraftmod.rks.model.extra.TextureFilter;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL20C;
@@ -16,7 +17,7 @@ public class Gpu2DTexture {
     public final String name;
     public final int id;
 
-    public Gpu2DTexture(ByteBuffer rgbaBytes, int width, int height, String name) {
+    public Gpu2DTexture(ByteBuffer rgbaBytes, int width, int height, TextureFilter filter, String name) {
         this.name = name;
         this.id = GL11C.glGenTextures();
 
@@ -25,11 +26,11 @@ public class Gpu2DTexture {
 
         GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_S, GL20C.GL_MIRRORED_REPEAT);
         GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_T, GL11C.GL_REPEAT);
-        GL11C.glTexParameterf(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, GL11C.GL_NEAREST);
-        GL11C.glTexParameterf(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_NEAREST);
+        GL11C.glTexParameterf(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, filter.glId);
+        GL11C.glTexParameterf(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, filter.glId);
     }
 
-    public static Gpu2DTexture create(BufferedImage image, String name) {
+    public static Gpu2DTexture create(BufferedImage image, TextureFilter filter, String name) {
         var rawData = ((DataBufferInt) image.getData().getDataBuffer()).getData();
         var data = MemoryUtil.memAlloc(rawData.length * 4);
         for (var pixel : rawData) {
@@ -40,10 +41,10 @@ public class Gpu2DTexture {
         }
 
         data.flip();
-        return new Gpu2DTexture(data, image.getWidth(), image.getHeight(), name);
+        return new Gpu2DTexture(data, image.getWidth(), image.getHeight(), filter, name);
     }
 
-    public static Gpu2DTexture create(byte[] bytes, String name) {
+    public static Gpu2DTexture create(byte[] bytes, TextureFilter filter, String name) {
         try (var stack = MemoryStack.stackPush()) {
             var fileBytes = Gpu3DTexture.readResource(bytes);
             var width = stack.mallocInt(1);
@@ -53,7 +54,7 @@ public class Gpu2DTexture {
             if (rgbaBytes == null)
                 throw new RuntimeException("Failed to load image: " + STBImage.stbi_failure_reason());
 
-            return new Gpu2DTexture(rgbaBytes, width.get(0), height.get(0), name);
+            return new Gpu2DTexture(rgbaBytes, width.get(0), height.get(0), filter, name);
         }
     }
 
