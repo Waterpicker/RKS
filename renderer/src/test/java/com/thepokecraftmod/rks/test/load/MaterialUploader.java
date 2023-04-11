@@ -6,7 +6,7 @@ import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.extra.TextureFilter;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
-import com.thepokecraftmod.rks.texture.Gpu2DTexture;
+import com.thepokecraftmod.rks.texture.GpuTexture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +20,11 @@ import java.util.function.Function;
 
 public class MaterialUploader {
     private static final Logger LOGGER = LoggerFactory.getLogger("Material Uploader");
-    public final Gpu2DTexture blank;
     public final Map<String, Material> materials = new HashMap<>();
+    public final List<Runnable> mainThreadUploads = new ArrayList<>();
 
     public MaterialUploader(Model model, FileLocator locator, Function<String, Shader> shaderFunction) {
         var filter = model.config().textureFiltering;
-        this.blank = Gpu2DTexture.create(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), filter, "blank");
 
         for (var entry : model.config().materials.entrySet()) {
             var name = entry.getKey();
@@ -37,14 +36,14 @@ public class MaterialUploader {
                 var texture = meshMaterial.getTextures(type);
 
                 if (texture.size() < 1) LOGGER.debug("Shader expects " + type + " but the texture is missing");
-                else upload(material, type, mergeAndLoad(locator, filter, texture));
+                else mainThreadUploads.add(() -> upload(material, type, mergeAndLoad(locator, filter, texture)));
             }
 
             materials.put(name, material);
         }
     }
 
-    private Gpu2DTexture mergeAndLoad(FileLocator locator, TextureFilter filter, List<String> textures) {
+    private GpuTexture.Reference mergeAndLoad(FileLocator locator, TextureFilter filter, List<String> textures) {
         var imageReferences = textures.stream().map(s -> "textures/" + s).map(locator::getFile).toList();
 
         var loadedImages = imageReferences.stream().map(bytes -> {
@@ -92,25 +91,25 @@ public class MaterialUploader {
             }
         }
 
-        return Gpu2DTexture.create(baseImage, filter, "test.jxl");
+        return new GpuTexture.Reference(baseImage, filter, "test.jxl");
     }
 
-    private void upload(Material material, TextureType type, Gpu2DTexture texture) {
+    private void upload(Material material, TextureType type, GpuTexture.Reference reference) {
+        var tex = reference.upload();
         var slot = material.usedSlots++;
-        material.textures.add(texture);
-        material.typeMap.put(texture, type);
-        material.slotMap.put(texture, slot);
+        material.textures.add(tex);
+        material.typeMap.put(tex, type);
+        material.slotMap.put(tex, slot);
     }
 
     public void handle(String materialName) {
-        // Bind Textures
+        if (mainThreadUploads.size() > 0) throw new RuntimeException("Textures not uploaded");
         var material = materials.get(materialName);
         if (material == null) {
             LOGGER.error("Missing material \"" + materialName + "\". Not binding");
             return;
         }
 
-        // Clear any existing data
         var unusedTexturesInShader = material.shader.texturesUsed().stream()
                 .filter(textureType -> !material.typeMap.containsValue(textureType))
                 .toList();
@@ -149,12 +148,17 @@ public class MaterialUploader {
         }
     }
 
+    public void upload() {
+        for (var task : mainThreadUploads) task.run();
+        mainThreadUploads.clear();
+    }
+
     public static class Material {
         public final String name;
         public final Shader shader;
-        public final List<Gpu2DTexture> textures = new ArrayList<>();
-        public final Map<Gpu2DTexture, Integer> slotMap = new HashMap<>();
-        public final Map<Gpu2DTexture, TextureType> typeMap = new HashMap<>();
+        public final List<GpuTexture.Direct> textures = new ArrayList<>();
+        public final Map<GpuTexture.Direct, Integer> slotMap = new HashMap<>();
+        public final Map<GpuTexture.Direct, TextureType> typeMap = new HashMap<>();
         protected int usedSlots = 0;
 
         public Material(String name, Shader shader) {

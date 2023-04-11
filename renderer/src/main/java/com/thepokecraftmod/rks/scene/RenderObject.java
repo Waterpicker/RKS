@@ -8,9 +8,9 @@ import java.util.List;
 
 public abstract class RenderObject {
     protected Shader shader;
-    public boolean hidden = false;
+    public boolean hidden;
     protected Matrix4f matrixOffset = new Matrix4f().identity();
-    protected boolean disableBackfaceCull = false;
+    protected boolean disableBackfaceCull;
 
     public abstract void render(List<ObjectInstance> instances);
 

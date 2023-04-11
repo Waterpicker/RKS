@@ -22,7 +22,7 @@ import java.util.Objects;
 public class UnlitTest {
     private static final Window WINDOW = new Window("Unlit Pokemon Test", 1920, 1080, false, true);
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
-    private static final RKS RKS = new RKS();
+    private static final RKS RKS = new RKS(() -> {});
 
     public static void main(String[] args) {
         var shader = new Shader.Builder()

@@ -35,7 +35,7 @@ public class ObjectManager {
         for (var entry : objects.entrySet()) {
             var object = entry.getKey();
 
-            if (object.hidden) {
+            if (!object.hidden) {
                 object.update();
                 object.render(entry.getValue());
             }

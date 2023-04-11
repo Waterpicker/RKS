@@ -84,11 +84,6 @@ public class SkyboxRenderObject extends RenderObject {
     }
 
     @Override
-    public boolean isReady() {
-        return true;
-    }
-
-    @Override
     public void render(List<ObjectInstance> instances) {
         if (instances.size() > 1) throw new RuntimeException("only 1 skybox is allowed");
 

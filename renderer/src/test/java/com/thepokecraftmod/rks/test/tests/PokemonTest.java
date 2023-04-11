@@ -31,7 +31,7 @@ public class PokemonTest {
     private static final Window WINDOW = new Window("Pokemon Test", 1920, 1080, true, true);
     private static final long START_TIME = System.currentTimeMillis();
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
-    private static final RKS RKS = new RKS();
+    private static final RKS RKS = new RKS(() -> {});
     private static double lastFrameTime;
 
     public static void main(String[] args) {
@@ -54,6 +54,7 @@ public class PokemonTest {
         for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(model.skeleton()));
 
         var material = new MaterialUploader(model, locator, s -> shader);
+        material.upload();
 
         var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -0.2f, -0.2f).rotateX(-90), materialName -> uploadUniforms(materialName, material));
         RKS.objectManager.add(object, instance);
