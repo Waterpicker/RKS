@@ -6,9 +6,9 @@ layout (location = 1) in vec2 inUV;
 layout (location = 2) in vec3 inNormal;
 
 out VS_OUT {
-    out vec3 pos;
-    out vec2 uv;
-    out vec3 normal;
+    vec3 pos;
+    vec2 uv;
+    vec3 normal;
 } vsOut;
 
 layout (std140) uniform SharedInfo {

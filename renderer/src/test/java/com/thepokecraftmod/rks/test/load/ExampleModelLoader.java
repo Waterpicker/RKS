@@ -5,23 +5,20 @@ import com.thepokecraftmod.rks.draw.MeshDrawCommand;
 import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Skeleton;
-import com.thepokecraftmod.rks.scene.AnimatedMeshObject;
 import com.thepokecraftmod.rks.scene.MeshObject;
-import com.thepokecraftmod.rks.scene.MultiRenderObject;
+import com.thepokecraftmod.rks.scene.holder.AnimatedFullMesh;
+import com.thepokecraftmod.rks.scene.holder.FullMesh;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ExampleModelLoader {
 
-    public static MultiRenderObject<MeshObject> loadMeshes(Model model) {
-        var mro = new MultiRenderObject<MeshObject>();
+    public static FullMesh loadMeshes(Model model) {
+        var mro = new FullMesh();
 
         for (var mesh : model.meshes()) {
             var meshObject = new MeshObject(model.materialReferences()[mesh.material()]);
@@ -93,12 +90,12 @@ public class ExampleModelLoader {
         return mro;
     }
 
-    public static MultiRenderObject<AnimatedMeshObject> loadAnimatedMeshes(Model model) {
-        var mro = new MultiRenderObject<AnimatedMeshObject>();
+    public static AnimatedFullMesh loadAnimatedMeshes(Model model) {
+        var mro = new AnimatedFullMesh(Map.of());
 
         for (var mesh : model.meshes()) {
             if (mesh.bones().size() == 0) throw new RuntimeException("Mesh has no bones");
-            var meshObject = new AnimatedMeshObject(model.materialReferences()[mesh.material()]);
+            var meshObject = new MeshObject(model.materialReferences()[mesh.material()]);
 
             var useShort = mesh.indices().size() < Short.MAX_VALUE;
             var indexBuffer = MemoryUtil.memAlloc(mesh.indices().size() * (useShort ? 2 : 4));

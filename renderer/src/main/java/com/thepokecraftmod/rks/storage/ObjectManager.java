@@ -17,10 +17,16 @@ public class ObjectManager {
         for (var objects : objects.values()) {
             if (objects.size() > 0) {
                 for (var objectInstance : objects) {
-                    if (objectInstance instanceof AnimatedObjectInstance animatedObjectInstance) {
-                        if (animatedObjectInstance.currentAnimation != null) {
-                            if (!animationController.playingInstances.contains((animatedObjectInstance.currentAnimation))) {
-                                animationController.playingInstances.add(animatedObjectInstance.currentAnimation);
+                    if (objectInstance instanceof AnimatedObjectInstance animatedInstance) {
+                        if (animatedInstance.mainAnimation != null) {
+                            if (!animationController.playingInstances.contains((animatedInstance.mainAnimation))) {
+                                animationController.playingInstances.add(animatedInstance.mainAnimation);
+                            }
+                        }
+
+                        if (animatedInstance.facialAnimation != null) {
+                            if (!animationController.playingInstances.contains((animatedInstance.facialAnimation))) {
+                                animationController.playingInstances.add(animatedInstance.facialAnimation);
                             }
                         }
                     }
@@ -47,12 +53,5 @@ public class ObjectManager {
         objects.putIfAbsent(object, new ArrayList<>());
         objects.get(object).add(instance);
         return instance;
-    }
-
-    /**
-     * Used within Minecraft to provide easier support for the rendering style they use
-     */
-    public void clearObjects() {
-        objects.clear();
     }
 }

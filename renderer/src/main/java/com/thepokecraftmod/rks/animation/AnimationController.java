@@ -37,7 +37,7 @@ public class AnimationController {
 
             if (playingInstance.startTime == -1) playingInstance.startTime = globalSecondsPassed;
             playingInstance.update(globalSecondsPassed);
-            playingInstance.matrixTransforms = playingInstance.getFrameTransform(playingInstance);
+            playingInstance.matrixTransforms = playingInstance.getFrameTransform();
         }
 
         playingInstances.removeAll(instancesToRemove);

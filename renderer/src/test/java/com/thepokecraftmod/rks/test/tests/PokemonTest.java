@@ -16,14 +16,15 @@ import com.thepokecraftmod.rks.test.util.SharedUniformBlock;
 import com.thepokecraftmod.rks.test.util.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11C;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,7 +33,6 @@ public class PokemonTest {
     private static final long START_TIME = System.currentTimeMillis();
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
     private static final RKS RKS = new RKS(() -> {});
-    private static double lastFrameTime;
 
     public static void main(String[] args) {
         var shader = new Shader.Builder()
@@ -48,40 +48,47 @@ public class PokemonTest {
                 .build();
 
 
-        var locator = new ResourceCachedFileLocator("testModels/fallback");
+        var locator = new ResourceCachedFileLocator("testModels/rayquaza");
         var model = AssimpModelLoader.load("model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
         var object = ExampleModelLoader.loadAnimatedMeshes(model);
-        for (var meshObject : object.objects) meshObject.setup(shader, loadAnimations(model.skeleton()));
+        object.animations.putAll(loadAnimations(model.skeleton()));
+        for (var meshObject : object.objects) meshObject.setup(shader);
 
         var material = new MaterialUploader(model, locator, s -> shader);
         material.upload();
 
-        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0, -0.2f, -0.2f).rotateX(-90), materialName -> uploadUniforms(materialName, material));
+        var instance = new AnimatedObjectInstance(220, new Matrix4f().translation(0f, -2f, 2f).rotateX(-90), materialName -> uploadUniforms(materialName, material));
         RKS.objectManager.add(object, instance);
 
-        instance.currentAnimation = new AnimationInstance(object.objects.get(0).animations.get("idle"));
+        instance.mainAnimation = new AnimationInstance(object.animations.get("idle"));
+        instance.facialAnimation = new AnimationInstance(object.animations.get("facial"));
 
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
             SHARED.update();
-            instance.transformationMatrix.rotateZ((float) ((GLFW.glfwGetTime() - lastFrameTime) * 10f));
             GL11C.glClearColor(0, 0, 0, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
             RKS.render((System.currentTimeMillis() - START_TIME) / 1000d);
             WINDOW.swapBuffers();
-            lastFrameTime = GLFW.glfwGetTime();
         }
     }
 
     private static Map<String, Animation> loadAnimations(Skeleton skeleton) {
         try {
-            var pAnimation = ByteBuffer.wrap(Files.readAllBytes(Paths.get("F:/NewAttempt/ScarletViolet/pokemon/data/pm9999/pm9999_00_00/pm9999_00_00_20000_defaultwait01_loop.gfbanm")));
-            var trAnimation = com.thepokecraftmod.rks.model.animation.tranm.Animation.getRootAsAnimation(pAnimation);
-            var animation = new Animation("idle", trAnimation, skeleton);
-            return Map.of("idle", animation);
+            var animationsPath = Paths.get("F:\\NewAttempt\\ScarletViolet\\animationRepoTesting\\rayquaza\\default");
+            var animations = new HashMap<String, Animation>();
+            loadAnimation(animations, "idle", animationsPath.resolve("fly_battlewait01_loop.tranm"), skeleton);
+            loadAnimation(animations, "facial", animationsPath.resolve("fly_mouth01.tranm"), skeleton);
+            return animations;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void loadAnimation(Map<String, Animation> map, String name, Path animationFile, Skeleton skeleton) throws IOException {
+        var pAnimation = ByteBuffer.wrap(Files.readAllBytes(animationFile));
+        var trAnimation = com.thepokecraftmod.rks.model.animation.tranm.Animation.getRootAsAnimation(pAnimation);
+        map.put(name, new Animation(name, trAnimation, skeleton));
     }
 
     private static void uploadUniforms(String materialName, MaterialUploader uploader) {

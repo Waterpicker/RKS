@@ -1,5 +1,6 @@
 package com.thepokecraftmod.rks.storage;
 
+import com.thepokecraftmod.rks.scene.holder.FullMesh;
 import com.thepokecraftmod.rks.texture.RenderMaterial;
 import com.thepokecraftmod.rks.pipeline.UniformBlockUploader;
 import com.thepokecraftmod.rks.scene.RenderObject;
@@ -8,7 +9,7 @@ import org.lwjgl.system.MemoryStack;
 
 public class ObjectInstance extends UniformBlockUploader {
     public final Matrix4f transformationMatrix;
-    protected RenderObject object;
+    private FullMesh object;
     public RenderMaterial material;
 
     public ObjectInstance(Matrix4f transformationMatrix, RenderMaterial material) {
@@ -30,11 +31,11 @@ public class ObjectInstance extends UniformBlockUploader {
     }
 
     public void link(RenderObject object) {
-        this.object = object;
+        this.object = (FullMesh) object;
         object.applyTransformOffset(transformationMatrix);
     }
 
-    public RenderObject getObject() {
+    public FullMesh getFullMesh() {
         return object;
     }
 }

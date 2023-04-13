@@ -2,24 +2,19 @@ package com.thepokecraftmod.rks.storage;
 
 import com.thepokecraftmod.rks.animation.AnimationController;
 import com.thepokecraftmod.rks.animation.AnimationInstance;
-import com.thepokecraftmod.rks.model.animation.Animation;
-import com.thepokecraftmod.rks.scene.AnimatedMeshObject;
-import com.thepokecraftmod.rks.scene.MultiRenderObject;
+import com.thepokecraftmod.rks.scene.holder.AnimatedFullMesh;
 import com.thepokecraftmod.rks.texture.RenderMaterial;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class AnimatedObjectInstance extends ObjectInstance {
 
     private final int boneCount;
     @Nullable
-    public AnimationInstance currentAnimation;
+    public AnimationInstance mainAnimation;
+    @Nullable
+    public AnimationInstance facialAnimation;
 
     public AnimatedObjectInstance(int boneCount, Matrix4f transformationMatrix, RenderMaterial materialId) {
         super(MAT4F_SIZE * boneCount + MAT4F_SIZE, transformationMatrix, materialId);
@@ -27,46 +22,59 @@ public class AnimatedObjectInstance extends ObjectInstance {
     }
 
     public void update() {
+        if (getMainTransforms().length != getFacialTransforms().length)
+            throw new RuntimeException("Animations are not compatible");
+
         try (var stack = MemoryStack.stackPush()) {
             var pTransformationMatrix = stack.nmalloc(MAT4F_SIZE);
             transformationMatrix.getToAddress(pTransformationMatrix);
             upload(0, MAT4F_SIZE, pTransformationMatrix);
 
             var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * boneCount);
-            var transforms = getTransforms();
-            for (int i = 0; i < transforms.length; i++) {
-                if(transforms[i] != null)
-                    transforms[i].getToAddress(pAnimTransforms + (long) i * MAT4F_SIZE);
+            var layer0 = getMainTransforms();
+            var layer1 = getFacialTransforms();
+            for (int i = 0; i < layer1.length; i++) {
+                var layer0Transform = layer0[i];
+                // var layer1Transform = layer1[i];
+
+                if (layer0Transform != null) {
+                    layer0Transform.getToAddress(pAnimTransforms + (long) i * MAT4F_SIZE);
+                    // Disabled due to bugs
+                    // if (layer1 != AnimationController.NO_ANIMATION && !layer0Transform.equals(layer1Transform)) {
+                    //     var combinedTransform = layer0Transform.mul(layer1Transform, new Matrix4f());
+                    //     combinedTransform.getToAddress(pAnimTransforms + (long) i * MAT4F_SIZE);
+                    // } else
+                    //     layer0Transform.getToAddress(pAnimTransforms + (long) i * MAT4F_SIZE);
+                }
             }
 
             upload(MAT4F_SIZE, MAT4F_SIZE * boneCount, pAnimTransforms);
         }
     }
 
-    @NotNull
-    public Map<String, Animation> getAnimationsIfAvailable() {
-        try {
-            return getAnimatedMesh().animations;
-        } catch (Exception ignored) {
-            return Collections.emptyMap();
-        }
+    public AnimatedFullMesh getFullMesh() {
+        return (AnimatedFullMesh) super.getFullMesh();
     }
 
-    public AnimatedMeshObject getAnimatedMesh() {
-        if (object instanceof MultiRenderObject<?> mro) {
-            return ((List<AnimatedMeshObject>) mro.objects).get(0);
-        }
-        return (AnimatedMeshObject) object;
-    }
-
-    public Matrix4f[] getTransforms() {
-        if (currentAnimation == null || currentAnimation.matrixTransforms == null)
+    public Matrix4f[] getMainTransforms() {
+        if (mainAnimation == null || mainAnimation.matrixTransforms == null)
             return AnimationController.NO_ANIMATION;
-        return currentAnimation.matrixTransforms;
+        return mainAnimation.matrixTransforms;
     }
 
-    public void changeAnimation(AnimationInstance newAnimation) {
-        if (currentAnimation != null) currentAnimation.destroy();
-        this.currentAnimation = newAnimation;
+    public Matrix4f[] getFacialTransforms() {
+        if (facialAnimation == null || facialAnimation.matrixTransforms == null)
+            return AnimationController.NO_ANIMATION;
+        return facialAnimation.matrixTransforms;
+    }
+
+    public void changeMainAnimation(AnimationInstance instance) {
+        if (this.mainAnimation != null) this.mainAnimation.destroy();
+        this.mainAnimation = instance;
+    }
+
+    public void changeFacialAnimation(AnimationInstance instance) {
+        if (this.facialAnimation != null) this.facialAnimation.destroy();
+        this.facialAnimation = instance;
     }
 }

@@ -1,0 +1,79 @@
+{
+  "shadingMethod": "pokemon",
+  "emissionIntensity": 0.3,
+  "hiddenMeshes": [],
+  "materials": {
+    "body_a": {
+      "albedo": ["body_a_alb.jxl"],
+      "normal": [
+        "body_a_nrm.jxl",
+        "body_a_nrm_overlay.jxl"
+      ],
+      "metallic": ["body_a_mtl.jxl"],
+      "roughness": ["body_a_rgn.jxl"],
+      "ao": ["body_a_ao.jxl"],
+      "emission": ["body_a_emi.jxl"]
+    },
+    "body_b": {
+      "albedo": ["body_b_alb.jxl"],
+      "normal": [
+        "body_b_nrm.jxl",
+        "body_b_nrm_overlay.jxl"
+      ],
+      "metallic": ["body_b_mtl.jxl"],
+      "roughness": ["body_b_rgn.jxl"],
+      "ao": ["body_b_ao.jxl"]
+    },
+
+    "eyes": {
+      "albedo": ["eye_alb.jxl"],
+      "normal": ["eye_nrm.jxl"],
+      "emission": ["eye_alb.jxl"]
+    }
+  },
+  "variants": {
+    "shiny": [
+      {
+        "type": "set_texture",
+        "material": "body_a",
+        "textureType": "albedo",
+        "texture": {
+          "layers": ["body_a_shiny_alb.jxl"]
+        }
+      },
+      {
+        "type": "set_texture",
+        "material": "body_b",
+        "textureType": "albedo",
+        "texture": {
+          "layers": ["body_b_shiny_alb.jxl"]
+        }
+      }
+    ]
+  },
+  "animations": [],
+  "pokemonConfig": {
+    "nameTagHeight": 1,
+    "partyPortrait": {
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": -30,
+        "z": 0
+      },
+      "scale": 1.0
+    },
+    "legacyTransform": {
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": 1.0
+    }
+  }
+}

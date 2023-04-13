@@ -43,7 +43,8 @@ public class Animation {
 
         for (var value : this.animationNodes) {
             if (value != null)
-                for (var key : value.positionKeys) duration = key.time() > duration ? key.time() : duration;
+                for (var key : value.positionKeys) //noinspection ManualMinMaxCalculation
+                    duration = key.time() > duration ? key.time() : duration;
         }
 
         return duration;
@@ -62,7 +63,7 @@ public class Animation {
 
     public void readNodeHierarchy(float animTime, BoneNode node, Matrix4f parentTransform, Matrix4f[] boneTransforms) {
         var name = node.name;
-        var nodeTransform = node.transform;
+        var nodeTransform = new Matrix4f(node.transform);
 
         var animationNodeId = nodeIdMap.getOrDefault(name, -1);
         if (animationNodeId != -1) {
@@ -74,9 +75,8 @@ public class Animation {
                 var translation = AnimationMath.calcInterpolatedPosition(animTime, animNode);
                 nodeTransform.identity().translationRotateScale(translation, rotation, scale);
 
-                if (!Float.isNaN(nodeTransform.m00())) {
+                if (!Float.isNaN(nodeTransform.m00()))
                     lastSuccessfulTransforms.put(node, new Matrix4f(nodeTransform));
-                }
             }
         }
 
