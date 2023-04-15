@@ -1,15 +1,15 @@
-package com.thepokecraftmod.rks.model.extra.variant;
+package com.thepokecraftmod.rks.model.config.variant;
 
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShowMeshModifier implements VariantModifier {
+public class HideMeshModifier implements VariantModifier {
 
     public final List<String> meshes = new ArrayList<>();
 
-    public ShowMeshModifier(JsonObject object) {
+    public HideMeshModifier(JsonObject object) {
         var jsonMeshes = object.get("meshes").getAsJsonArray();
 
         for (var element : jsonMeshes)

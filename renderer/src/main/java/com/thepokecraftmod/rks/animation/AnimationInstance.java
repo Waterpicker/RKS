@@ -6,10 +6,11 @@ import org.joml.Matrix4f;
 /**
  * Instance of an animation.
  */
-public class AnimationInstance {
+public abstract class AnimationInstance {
 
     protected Animation animation;
     public double startTime = -1;
+    protected double lastRealTime;
     protected float currentTime;
     protected double timeAtPause;
     protected double timeAtUnpause;
@@ -22,6 +23,7 @@ public class AnimationInstance {
     }
 
     public void update(double secondsPassed) {
+        lastRealTime = secondsPassed;
         updateStart(secondsPassed);
 
         if (!paused) {

@@ -6,7 +6,7 @@ import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.BoneNode;
 import com.thepokecraftmod.rks.model.animation.Skeleton;
 import com.thepokecraftmod.rks.model.bone.Bone;
-import com.thepokecraftmod.rks.model.extra.ModelConfig;
+import com.thepokecraftmod.rks.model.config.ModelConfig;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;

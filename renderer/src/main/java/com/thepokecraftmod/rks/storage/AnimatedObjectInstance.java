@@ -2,7 +2,6 @@ package com.thepokecraftmod.rks.storage;
 
 import com.thepokecraftmod.rks.animation.AnimationController;
 import com.thepokecraftmod.rks.animation.AnimationInstance;
-import com.thepokecraftmod.rks.scene.holder.AnimatedFullMesh;
 import com.thepokecraftmod.rks.texture.RenderMaterial;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -22,7 +21,7 @@ public class AnimatedObjectInstance extends ObjectInstance {
     }
 
     public void update() {
-        if (getMainTransforms().length != getFacialTransforms().length)
+        if (getMainTransforms().length != getFacialTransforms().length && getFacialTransforms() != AnimationController.NO_ANIMATION)
             throw new RuntimeException("Animations are not compatible");
 
         try (var stack = MemoryStack.stackPush()) {
@@ -33,7 +32,7 @@ public class AnimatedObjectInstance extends ObjectInstance {
             var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * boneCount);
             var layer0 = getMainTransforms();
             var layer1 = getFacialTransforms();
-            for (int i = 0; i < layer1.length; i++) {
+            for (int i = 0; i < layer0.length; i++) {
                 var layer0Transform = layer0[i];
                 // var layer1Transform = layer1[i];
 
@@ -50,10 +49,6 @@ public class AnimatedObjectInstance extends ObjectInstance {
 
             upload(MAT4F_SIZE, MAT4F_SIZE * boneCount, pAnimTransforms);
         }
-    }
-
-    public AnimatedFullMesh getFullMesh() {
-        return (AnimatedFullMesh) super.getFullMesh();
     }
 
     public Matrix4f[] getMainTransforms() {

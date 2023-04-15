@@ -1,7 +1,7 @@
 package com.thepokecraftmod.rks.texture;
 
 import com.thepokecraftmod.rks.RKS;
-import com.thepokecraftmod.rks.model.extra.TextureFilter;
+import com.thepokecraftmod.rks.model.config.TextureFilter;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL20C;

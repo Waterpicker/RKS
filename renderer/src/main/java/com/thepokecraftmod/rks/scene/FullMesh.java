@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.scene.holder;
+package com.thepokecraftmod.rks.scene;
 
 import com.thepokecraftmod.rks.scene.MeshObject;
 import com.thepokecraftmod.rks.scene.RenderObject;

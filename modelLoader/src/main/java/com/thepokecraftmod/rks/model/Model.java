@@ -1,7 +1,7 @@
 package com.thepokecraftmod.rks.model;
 
 import com.thepokecraftmod.rks.model.animation.Skeleton;
-import com.thepokecraftmod.rks.model.extra.ModelConfig;
+import com.thepokecraftmod.rks.model.config.ModelConfig;
 
 public record Model(
         String[] materialReferences,

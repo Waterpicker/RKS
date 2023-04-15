@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.model.extra.variant;
+package com.thepokecraftmod.rks.model.config.variant;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

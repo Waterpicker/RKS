@@ -6,8 +6,7 @@ import com.thepokecraftmod.rks.model.Mesh;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.animation.Skeleton;
 import com.thepokecraftmod.rks.scene.MeshObject;
-import com.thepokecraftmod.rks.scene.holder.AnimatedFullMesh;
-import com.thepokecraftmod.rks.scene.holder.FullMesh;
+import com.thepokecraftmod.rks.scene.FullMesh;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
@@ -90,8 +89,8 @@ public class ExampleModelLoader {
         return mro;
     }
 
-    public static AnimatedFullMesh loadAnimatedMeshes(Model model) {
-        var mro = new AnimatedFullMesh(Map.of());
+    public static FullMesh loadAnimatedMeshes(Model model) {
+        var fullMesh = new FullMesh();
 
         for (var mesh : model.meshes()) {
             if (mesh.bones().size() == 0) throw new RuntimeException("Mesh has no bones");
@@ -186,10 +185,10 @@ public class ExampleModelLoader {
             MemoryUtil.memFree(indexBuffer);
             MemoryUtil.memFree(positionBuffer);
             MemoryUtil.memFree(uvBuffer);
-            mro.add(meshObject);
+            fullMesh.add(meshObject);
         }
 
-        return mro;
+        return fullMesh;
     }
 
     private static Pair<List<Vector4f>, List<Vector4f>> generateJointWeightData(Mesh mesh, Skeleton skeleton) {

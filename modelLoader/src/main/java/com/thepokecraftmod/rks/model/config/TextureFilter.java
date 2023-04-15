@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.model.extra;
+package com.thepokecraftmod.rks.model.config;
 
 public enum TextureFilter {
     NEAREST(0x2600),

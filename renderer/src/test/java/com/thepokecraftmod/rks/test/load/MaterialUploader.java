@@ -3,7 +3,7 @@ package com.thepokecraftmod.rks.test.load;
 import com.thebombzen.jxlatte.imageio.JXLImageReader;
 import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Model;
-import com.thepokecraftmod.rks.model.extra.TextureFilter;
+import com.thepokecraftmod.rks.model.config.TextureFilter;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
 import com.thepokecraftmod.rks.texture.GpuTexture;

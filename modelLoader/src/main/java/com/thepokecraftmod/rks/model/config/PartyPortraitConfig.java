@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.model.extra;
+package com.thepokecraftmod.rks.model.config;
 
 import org.joml.Vector3f;
 
