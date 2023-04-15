@@ -21,8 +21,9 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven() { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         mavenLocal()
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://maven.thepokecraftmod.com/releases" }
         maven { url 'https://jitpack.io' }
     }
 
@@ -41,13 +42,22 @@ subprojects {
 
     publishing {
         publications {
-            myLib(MavenPublication) {
-                from components.java
+            create(MavenPublication) {
+                from(components["java"])
             }
         }
 
         repositories {
             mavenLocal()
+            maven {
+                name = "PokeModRepo"
+                url = uri("https://maven.thepokecraftmod.com/releases")
+                credentials {
+                    username = project.properties["pokecraftLogin"]?.toString() ?: findProperty("REPO_LOGIN").toString()
+                    password = project.properties["pokecraftToken"]?.toString() ?: findProperty("REPO_PASSWORD").toString()
+                }
+            }
+
         }
     }
 
