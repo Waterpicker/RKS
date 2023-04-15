@@ -25,7 +25,8 @@ public class PokemonTest {
     private static final Window WINDOW = new Window("Pokemon Test", 1920, 1080, true, true);
     private static final long START_TIME = System.currentTimeMillis();
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
-    private static final RKS RKS = new RKS(() -> {});
+    private static final RKS RKS = new RKS(() -> {
+    });
 
     public static void main(String[] args) {
         var shader = new Shader.Builder()
@@ -50,15 +51,20 @@ public class PokemonTest {
         material.upload();
 
         var instance = new AnimatedObjectInstance(220, new Matrix4f().rotateX(180).rotateZ(200).translate(1, -0.2f, -2), materialName -> uploadUniforms(materialName, material));
+        var instance2 = new AnimatedObjectInstance(220, new Matrix4f().rotateX(180).rotateZ(200).translate(-1, -0.2f, -3), materialName -> uploadUniforms(materialName, material));
         RKS.objectManager.add(object, instance);
+        RKS.objectManager.add(object, instance2);
         animator.animate(instance, AnimationGroup.FLYING, "eat", 3,
-                i1 -> i1.handleTransition(instance, AnimationGroup.FLYING, "happy", 0,
-                        i2 -> i2.handleTransition(instance, AnimationGroup.FLYING, "idle", -1)));
+                i1 -> i1.handleTransition(AnimationGroup.FLYING, "happy", 0,
+                        i2 -> i2.handleTransition(AnimationGroup.FLYING, "idle", -1)));
+
+        animator.animate(instance2, AnimationGroup.FLYING, "eat", 3,
+                i1 -> i1.handleTransition(AnimationGroup.FLYING, "angry", 0,
+                        i2 -> i2.handleTransition(AnimationGroup.FLYING, "idle", -1)));
 
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
             SHARED.update();
-                        instance.transformationMatrix.translate(0, 0, 0);
             GL11C.glClearColor(0, 0, 0, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
             RKS.render((System.currentTimeMillis() - START_TIME) / 1000d);

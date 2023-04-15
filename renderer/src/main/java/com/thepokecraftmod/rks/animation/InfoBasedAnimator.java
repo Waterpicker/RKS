@@ -44,23 +44,26 @@ public class InfoBasedAnimator {
         var startAnimation = animationInfo.hasStart() ? animationCache.get(animationInfo.getStartAnimation()) : animationCache.get(animationInfo.getMainAnimation());
 
         if (instance.mainAnimation instanceof ControlledInstance controlledInstance) {
-            controlledInstance.handleTransition(instance, group, action, loops);
+            if (instance != controlledInstance.instance) throw new RuntimeException("Instance Mismatch");
+            controlledInstance.handleTransition(group, action, loops);
         } else {
-            var newInstance = new ControlledInstance(startAnimation, this, animationInfo, loops, afterAnimation);
+            var newInstance = new ControlledInstance(startAnimation, instance, this, animationInfo, loops, afterAnimation);
             instance.changeMainAnimation(newInstance);
         }
     }
 
     public static class ControlledInstance extends AnimationInstance {
 
+        private final AnimatedObjectInstance instance;
         private final InfoBasedAnimator animator;
         private final AnimationInfo info;
         private final int loops;
         private final Consumer<ControlledInstance> afterAnimation;
         private int i = 0;
 
-        public ControlledInstance(Animation startAnim, InfoBasedAnimator animator, AnimationInfo info, int loops, Consumer<ControlledInstance> afterAnimation) {
+        public ControlledInstance(Animation startAnim, AnimatedObjectInstance instance, InfoBasedAnimator animator, AnimationInfo info, int loops, Consumer<ControlledInstance> afterAnimation) {
             super(startAnim);
+            this.instance = instance;
             this.animator = animator;
             this.info = info;
             this.loops = loops;
@@ -93,11 +96,11 @@ public class InfoBasedAnimator {
             this.currentTime = animation.getAnimationTime(0);
         }
 
-        public void handleTransition(AnimatedObjectInstance instance, AnimationGroup group, String action, int loops) {
-            handleTransition(instance, group, action, loops, null);
+        public void handleTransition(AnimationGroup group, String action, int loops) {
+            handleTransition(group, action, loops, null);
         }
 
-        public void handleTransition(AnimatedObjectInstance instance, AnimationGroup group, String action, int loops, Consumer<ControlledInstance> afterAnimation) {
+        public void handleTransition(AnimationGroup group, String action, int loops, Consumer<ControlledInstance> afterAnimation) {
             destroy();
             instance.mainAnimation = null;
             animator.animate(instance, group, action, loops, afterAnimation);

@@ -105,7 +105,7 @@
       },
       "spot_player": {"main": "fly_notice01.tranm"},
       "happy": {"main": "fly_glad01.tranm"},
-      "mad": {"main": "fly_hate01.tranm"},
+      "angry": {"main": "fly_hate01.tranm"},
       "turn_left": {"main": "fly_turn_l090.tranm"},
       "turn_right": {"main": "fly_turn_r090.tranm"},
       "refresh": {"main": "fly_refresh01.tranm"},
