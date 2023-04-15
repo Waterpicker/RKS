@@ -34,7 +34,5 @@ public class ObjectInstance extends UniformBlockUploader {
 
     public void link(RenderObject object) {
         this.object = (FullMesh) object;
-        object.applyTransformOffset(transformationMatrix);
     }
-
 }

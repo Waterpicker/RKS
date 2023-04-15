@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ObjectManager {
     private final AnimationController animationController = new AnimationController();
-    private final Map<RenderObject, List<ObjectInstance>> objects = new HashMap<>();
+    public final Map<RenderObject, List<ObjectInstance>> objects = new HashMap<>();
 
     public void update(double secondsPassed) {
         for (var objects : objects.values()) {
@@ -53,5 +53,9 @@ public class ObjectManager {
         objects.putIfAbsent(object, new ArrayList<>());
         objects.get(object).add(instance);
         return instance;
+    }
+
+    public void reset() {
+        objects.clear();
     }
 }
