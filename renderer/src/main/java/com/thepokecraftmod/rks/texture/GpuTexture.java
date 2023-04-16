@@ -1,6 +1,5 @@
 package com.thepokecraftmod.rks.texture;
 
-import com.thepokecraftmod.rks.RKS;
 import com.thepokecraftmod.rks.model.config.TextureFilter;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
@@ -112,7 +111,6 @@ public interface GpuTexture extends Closeable {
         }
 
         public Direct upload() {
-            RKS.assertOnRenderThread();
             return new Direct(readyData, width, height, filter, name);
         }
     }

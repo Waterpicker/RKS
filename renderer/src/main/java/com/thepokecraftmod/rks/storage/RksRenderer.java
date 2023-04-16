@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ObjectManager {
+public class RksRenderer {
     private final AnimationController animationController = new AnimationController();
     public final Map<RenderObject, List<ObjectInstance>> objects = new HashMap<>();
 
@@ -34,7 +34,7 @@ public class ObjectManager {
             }
         }
 
-        animationController.render(secondsPassed);
+        animationController.update(secondsPassed);
     }
 
     public void render() {

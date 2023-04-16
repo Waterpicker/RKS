@@ -1,13 +1,9 @@
 package com.thepokecraftmod.rks.scene;
 
-import com.thepokecraftmod.rks.scene.MeshObject;
-import com.thepokecraftmod.rks.scene.RenderObject;
 import com.thepokecraftmod.rks.storage.ObjectInstance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 public class FullMesh extends RenderObject {
 

@@ -1,11 +1,11 @@
 package com.thepokecraftmod.rks.test.tests;
 
-import com.thepokecraftmod.rks.RKS;
 import com.thepokecraftmod.rks.assimp.AssimpModelLoader;
 import com.thepokecraftmod.rks.model.texture.TextureType;
 import com.thepokecraftmod.rks.pipeline.Shader;
 import com.thepokecraftmod.rks.pipeline.UniformBlockReference;
 import com.thepokecraftmod.rks.storage.ObjectInstance;
+import com.thepokecraftmod.rks.storage.RksRenderer;
 import com.thepokecraftmod.rks.test.load.ExampleModelLoader;
 import com.thepokecraftmod.rks.test.load.MaterialUploader;
 import com.thepokecraftmod.rks.test.load.ResourceCachedFileLocator;
@@ -22,7 +22,7 @@ import java.util.Objects;
 public class BRDFTest {
     private static final Window WINDOW = new Window("BRDF Pokemon Test", 1920, 1080, false, true);
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
-    private static final RKS RKS = new RKS(() -> {});
+    private static final RksRenderer RKS = new RksRenderer();
 
     public static void main(String[] args) {
         var shader = new Shader.Builder()
@@ -46,7 +46,7 @@ public class BRDFTest {
         material.upload();
 
         var instance = new ObjectInstance(new Matrix4f().translation(0, -0.8f, -0.3f), materialName -> uploadUniforms(materialName, material));
-        RKS.objectManager.add(object, instance);
+        RKS.add(object, instance);
 
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
@@ -55,7 +55,8 @@ public class BRDFTest {
             instance.transformationMatrix.rotateXYZ(new Vector3f(0, 0.02f, 0));
             GL11C.glClearColor(0, 0, 0, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
-            RKS.render(0);
+            RKS.render();
+            RKS.update(0);
             WINDOW.swapBuffers();
         }
     }

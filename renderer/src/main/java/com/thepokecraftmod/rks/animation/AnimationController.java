@@ -16,7 +16,7 @@ public class AnimationController {
     public final List<AnimationInstance> playingInstances = new ArrayList<>();
     public final Map<Animation, Matrix4f[]> instanceIgnoringAnimTransforms = new HashMap<>();
 
-    public void render(double globalSecondsPassed) {
+    public void update(double globalSecondsPassed) {
         var instancesToRemove = new ArrayList<AnimationInstance>();
         instanceIgnoringAnimTransforms.clear();
 

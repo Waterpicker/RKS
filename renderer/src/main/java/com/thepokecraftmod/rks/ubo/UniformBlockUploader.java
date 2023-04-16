@@ -1,4 +1,4 @@
-package com.thepokecraftmod.rks.pipeline;
+package com.thepokecraftmod.rks.ubo;
 
 import org.lwjgl.opengl.GL33C;
 

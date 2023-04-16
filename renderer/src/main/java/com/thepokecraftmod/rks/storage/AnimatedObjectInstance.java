@@ -31,7 +31,6 @@ public class AnimatedObjectInstance extends ObjectInstance {
 
             var pAnimTransforms = stack.nmalloc(MAT4F_SIZE * boneCount);
             var layer0 = getMainTransforms();
-            var layer1 = getFacialTransforms();
             for (int i = 0; i < layer0.length; i++) {
                 var layer0Transform = layer0[i];
                 // var layer1Transform = layer1[i];

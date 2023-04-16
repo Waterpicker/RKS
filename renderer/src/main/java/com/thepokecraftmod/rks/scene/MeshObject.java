@@ -25,6 +25,7 @@ public class MeshObject extends RenderObject {
             shader.bind();
 
             for (var instance : instances) {
+                instance.bind();
                 instance.update();
                 instance.material.updateUniforms(materialReference);
                 if (disableBackfaceCull) GL11.glDisable(GL11.GL_CULL_FACE);

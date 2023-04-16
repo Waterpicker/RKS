@@ -19,7 +19,7 @@ public class AnimationInfo {
     }
 
     public boolean hasEnd() {
-        return start != null;
+        return end != null;
     }
 
     @Nullable

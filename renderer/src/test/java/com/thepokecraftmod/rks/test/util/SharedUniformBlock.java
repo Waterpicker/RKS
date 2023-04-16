@@ -1,6 +1,6 @@
 package com.thepokecraftmod.rks.test.util;
 
-import com.thepokecraftmod.rks.pipeline.UniformBlockUploader;
+import com.thepokecraftmod.rks.ubo.UniformBlockUploader;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
