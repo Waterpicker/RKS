@@ -1,6 +1,8 @@
 package com.thepokecraftmod.rks.test.load;
 
-import com.thebombzen.jxlatte.imageio.JXLImageReader;
+import com.thebombzen.jxlatte.JXLDecoder;
+import com.thebombzen.jxlatte.JXLImage;
+import com.thebombzen.jxlatte.JXLOptions;
 import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Model;
 import com.thepokecraftmod.rks.model.config.TextureFilter;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,8 +51,12 @@ public class MaterialUploader {
 
         var loadedImages = imageReferences.stream().map(bytes -> {
             try {
-                var reader = new JXLImageReader(null, bytes);
-                return reader.read(0, null);
+                var options = new JXLOptions();
+                options.hdr = JXLOptions.HDR_OFF;
+                options.threads = 2;
+                var reader = new JXLDecoder(new ByteArrayInputStream(bytes), options);
+                var image = reader.decode();
+                return image.asBufferedImage();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
