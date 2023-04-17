@@ -1,7 +1,6 @@
 package com.thepokecraftmod.rks.test.load;
 
 import com.thebombzen.jxlatte.JXLDecoder;
-import com.thebombzen.jxlatte.JXLImage;
 import com.thebombzen.jxlatte.JXLOptions;
 import com.thepokecraftmod.rks.FileLocator;
 import com.thepokecraftmod.rks.model.Model;
