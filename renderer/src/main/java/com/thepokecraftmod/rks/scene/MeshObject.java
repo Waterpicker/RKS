@@ -21,7 +21,7 @@ public class MeshObject extends RenderObject {
     }
 
     public void render(List<ObjectInstance> instances) {
-        if(!hidden) {
+        if (!hidden) {
             shader.bind();
 
             for (var instance : instances) {

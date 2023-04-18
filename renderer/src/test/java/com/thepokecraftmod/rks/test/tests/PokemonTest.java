@@ -32,6 +32,7 @@ public class PokemonTest {
     private static final RksRenderer RKS = new RksRenderer();
 
     public static void main(String[] args) {
+        var shouldStop = new AtomicBoolean();
         var shader = new Shader.Builder().shader(getResource("shaders/pokemon.vsh"), getResource("shaders/pokemon.fsh")).uniform(new UniformBlockReference("SharedInfo", 0)).uniform(new UniformBlockReference("InstanceInfo", 1)).texture(TextureType.ALBEDO).texture(TextureType.NORMALS).texture(TextureType.METALNESS).texture(TextureType.ROUGHNESS).texture(TextureType.AMBIENT_OCCLUSION).texture(TextureType.EMISSIVE).build();
 
         var locator = new ResourceCachedFileLocator("testModels/rayquaza");
@@ -77,10 +78,8 @@ public class PokemonTest {
                             i2 -> i2.handleTransition(AnimationGroup.FLYING, randomAnimation2, -1)));
         }
 
-        var die = new AtomicBoolean();
-
         var thread = new Thread(() -> {
-            while (!die.get())
+            while (!shouldStop.get())
                 RKS.update((System.currentTimeMillis() - START_TIME) / 1000d);
         });
         thread.start();
@@ -94,7 +93,7 @@ public class PokemonTest {
             WINDOW.swapBuffers();
         }
 
-        die.set(true);
+        shouldStop.set(true);
     }
 
     private static void uploadUniforms(String materialName, MaterialUploader uploader) {

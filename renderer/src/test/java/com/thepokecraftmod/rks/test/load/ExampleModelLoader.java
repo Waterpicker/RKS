@@ -185,6 +185,9 @@ public class ExampleModelLoader {
             MemoryUtil.memFree(indexBuffer);
             MemoryUtil.memFree(positionBuffer);
             MemoryUtil.memFree(uvBuffer);
+            MemoryUtil.memFree(normalBuffer);
+            MemoryUtil.memFree(jointBuffer);
+            MemoryUtil.memFree(weightBuffer);
             fullMesh.add(meshObject);
         }
 
