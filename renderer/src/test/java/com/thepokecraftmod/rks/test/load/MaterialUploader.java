@@ -55,7 +55,7 @@ public class MaterialUploader {
                 options.threads = 2;
                 var reader = new JXLDecoder(new ByteArrayInputStream(bytes), options);
                 var image = reader.decode();
-                return image.asBufferedImage();
+                return image.fillColor().asBufferedImage();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL20C;
 import org.lwjgl.system.MemoryUtil;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferFloat;
 import java.awt.image.DataBufferInt;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
@@ -78,21 +79,43 @@ public interface GpuTexture extends Closeable {
         }
 
         public Reference(BufferedImage image, TextureFilter filter, String name) {
-            var rawData = ((DataBufferInt) image.getData().getDataBuffer()).getData();
-            this.readyData = MemoryUtil.memAlloc(rawData.length * 4);
-            this.width = image.getWidth();
-            this.height = image.getHeight();
+            var buffer = image.getData().getDataBuffer();
 
-            for (var pixel : rawData) {
-                readyData.put((byte) ((pixel >> 16) & 0xFF));
-                readyData.put((byte) ((pixel >> 8) & 0xFF));
-                readyData.put((byte) (pixel & 0xFF));
-                readyData.put((byte) ((pixel >> 24) & 0xFF));
-            }
+            if (buffer instanceof DataBufferFloat intBuffer) {
+                var rawData = intBuffer.getData();
+                this.readyData = MemoryUtil.memAlloc(rawData.length * 4);
+                this.width = image.getWidth();
+                this.height = image.getHeight();
 
-            readyData.flip();
-            this.filter = filter;
-            this.name = name;
+                for (var hdrChannel : rawData) {
+                    var channelValue = hdrToRgb(hdrChannel);
+                    readyData.put((byte) channelValue);
+                }
+
+                readyData.flip();
+                this.filter = filter;
+                this.name = name;
+            } else if (buffer instanceof DataBufferInt floatBuffer) {
+                var rawData = floatBuffer.getData();
+                this.readyData = MemoryUtil.memAlloc(rawData.length * 4);
+                this.width = image.getWidth();
+                this.height = image.getHeight();
+
+                for (var pixel : rawData) {
+                    readyData.put((byte) ((pixel >> 16) & 0xFF));
+                    readyData.put((byte) ((pixel >> 8) & 0xFF));
+                    readyData.put((byte) (pixel & 0xFF));
+                    readyData.put((byte) ((pixel >> 24) & 0xFF));
+                }
+
+                readyData.flip();
+                this.filter = filter;
+                this.name = name;
+            } else throw new RuntimeException("Unknown Data Type: " + buffer.getClass().getName());
+        }
+
+        private static int hdrToRgb(float hdr) {
+            return (int) Math.min(Math.max(Math.pow(hdr, 1.0/2.2) * 255, 0), 255);
         }
 
         @Override
