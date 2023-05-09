@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PokemonTest {
     private static final Random RANDOM = new Random();
-    private static final Window WINDOW = new Window("Pokemon Test", 1920, 1080, true, true);
+    private static final Window WINDOW = new Window("Pokemon Test", 1920, 1080, true, false);
     private static final long START_TIME = System.currentTimeMillis();
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
     private static final RksRenderer RKS = new RksRenderer();
@@ -41,6 +41,7 @@ public class PokemonTest {
         for (var meshObject : object.objects) meshObject.setup(shader);
         var animator = new InfoBasedAnimator(model, locator);
         var material = new MaterialUploader(model, locator, s -> shader);
+        material.currentVariant = "shiny";
         material.upload();
 
         var possibleAnimations = List.of(
@@ -97,7 +98,7 @@ public class PokemonTest {
     }
 
     private static void uploadUniforms(String materialName, MaterialUploader uploader) {
-        var shader = uploader.materials.get(materialName).shader;
+        var shader = uploader.defaultMaterials.get(materialName).shader;
         var color = 255.0f;
         var distance = 5;
         shader.uploadVec3f("camPos", new Vector3f(0.1f, 0f, -1));

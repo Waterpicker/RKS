@@ -19,6 +19,7 @@ public interface VariantModifier {
 
             return switch (modifierType) {
                 case "append_texture" -> new AppendTextureModifier(object);
+                case "set_texture" -> new SetTextureModifier(object);
                 case "hide_mesh" -> new HideMeshModifier(object);
                 case "show_mesh" -> new ShowMeshModifier(object);
                 default -> INVALID;

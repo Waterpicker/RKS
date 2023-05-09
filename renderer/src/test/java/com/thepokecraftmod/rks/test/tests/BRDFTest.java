@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class BRDFTest {
-    private static final Window WINDOW = new Window("BRDF Pokemon Test", 1920, 1080, false, true);
+    private static final Window WINDOW = new Window("BRDF Pokemon Test", 1920, 1080, false, false);
     private static final SharedUniformBlock SHARED = new SharedUniformBlock(WINDOW, 90);
     private static final RksRenderer RKS = new RksRenderer();
 
@@ -62,7 +62,7 @@ public class BRDFTest {
     }
 
     private static void uploadUniforms(String materialName, MaterialUploader uploader) {
-        var shader = uploader.materials.get(materialName).shader;
+        var shader = uploader.defaultMaterials.get(materialName).shader;
         var lightStrength = 20000.0f;
         shader.uploadVec3f("camPos", new Vector3f(0f, 0f, -1));
         shader.uploadVec3fs(
