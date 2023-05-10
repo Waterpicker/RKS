@@ -33,50 +33,50 @@ public class PokemonTest {
 
     public static void main(String[] args) {
         var shouldStop = new AtomicBoolean();
-        var shader = new Shader.Builder().shader(getResource("shaders/pokemon.vsh"), getResource("shaders/pokemon.fsh")).uniform(new UniformBlockReference("SharedInfo", 0)).uniform(new UniformBlockReference("InstanceInfo", 1)).texture(TextureType.ALBEDO).texture(TextureType.NORMALS).texture(TextureType.METALNESS).texture(TextureType.ROUGHNESS).texture(TextureType.AMBIENT_OCCLUSION).texture(TextureType.EMISSIVE).build();
+        var shader = new Shader.Builder().shader(getResource("shaders/pokemon.vsh"), getResource("shaders/pokemon.fsh")).uniform(new UniformBlockReference("SharedInfo", 0)).uniform(new UniformBlockReference("InstanceInfo", 1)).texture(TextureType.ALBEDO)/*.texture(TextureType.NORMALS).texture(TextureType.METALNESS).texture(TextureType.ROUGHNESS).texture(TextureType.AMBIENT_OCCLUSION)/*.texture(TextureType.EMISSIVE)*/.build();
 
-        var locator = new ResourceCachedFileLocator("testModels/rayquaza");
+        var locator = new ResourceCachedFileLocator("testModels/articuno_shrine");
         var model = AssimpModelLoader.load("model.gltf", locator, 0x40 | 0x200); // 0x40 = genNormals 0x200 = limit bone weights
-        var object = ExampleModelLoader.loadAnimatedMeshes(model);
+        var object = ExampleModelLoader.loadMeshes(model);
         for (var meshObject : object.objects) meshObject.setup(shader);
-        var animator = new InfoBasedAnimator(model, locator);
+//        var animator = new InfoBasedAnimator(model, locator);
         var material = new MaterialUploader(model, locator, s -> shader);
         material.currentVariant = "shiny";
         material.upload();
 
-        var possibleAnimations = List.of(
-                "idle",
-                "battle_idle",
-                "faint",
-                "jump",
-                "fall",
-                "stunned",
-                "sleep",
-                "eat",
-                "attack1",
-                "attack2",
-                "damage1",
-                "damage2",
-                "ranged_attack1",
-                "ranged_attack2",
-                "spot_player",
-                "happy",
-                "angry",
-                "turn_left",
-                "turn_right",
-                "refresh",
-                "move",
-                "move_fast"
-        );
-        for (int i = 0; i < 60; i++) {
-            var instance = new AnimatedObjectInstance(220, new Matrix4f().rotateXYZ((float) Math.toRadians(120), 0, 0).translate(0, 0 + i * 0.1f, -0.1f), materialName -> uploadUniforms(materialName, material));
+//        var possibleAnimations = List.of(
+//                "idle",
+//                "battle_idle",
+//                "faint",
+//                "jump",
+//                "fall",
+//                "stunned",
+//                "sleep",
+//                "eat",
+//                "attack1",
+//                "attack2",
+//                "damage1",
+//                "damage2",
+//                "ranged_attack1",
+//                "ranged_attack2",
+//                "spot_player",
+//                "happy",
+//                "angry",
+//                "turn_left",
+//                "turn_right",
+//                "refresh",
+//                "move",
+//                "move_fast"
+//        );
+        for (int i = 0; i < 1; i++) {
+            var instance = new AnimatedObjectInstance(220, new Matrix4f().rotateXYZ(0, (float) Math.toRadians(180), 0), materialName -> uploadUniforms(materialName, material));
             RKS.add(object, instance);
-            var randomAnimation1 = possibleAnimations.get(RANDOM.nextInt(0, possibleAnimations.size()));
-            var randomAnimation2 = possibleAnimations.get(RANDOM.nextInt(0, possibleAnimations.size()));
-
-            animator.animate(instance, AnimationGroup.FLYING, "eat", 3,
-                    i1 -> i1.handleTransition(AnimationGroup.FLYING, randomAnimation1, 0,
-                            i2 -> i2.handleTransition(AnimationGroup.FLYING, randomAnimation2, -1)));
+//            var randomAnimation1 = possibleAnimations.get(RANDOM.nextInt(0, possibleAnimations.size()));
+//            var randomAnimation2 = possibleAnimations.get(RANDOM.nextInt(0, possibleAnimations.size()));
+//
+//            animator.animate(instance, AnimationGroup.FLYING, "eat", 3,
+//                    i1 -> i1.handleTransition(AnimationGroup.FLYING, randomAnimation1, 0,
+//                            i2 -> i2.handleTransition(AnimationGroup.FLYING, randomAnimation2, -1)));
         }
 
         var thread = new Thread(() -> {
@@ -88,7 +88,7 @@ public class PokemonTest {
         while (WINDOW.isOpen()) {
             WINDOW.pollEvents();
             SHARED.update();
-            GL11C.glClearColor(0, 0, 0, 1.0f);
+            GL11C.glClearColor(0,0,0, 1.0f);
             GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
             RKS.render();
             WINDOW.swapBuffers();

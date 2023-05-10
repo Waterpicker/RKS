@@ -13,8 +13,10 @@ import com.thepokecraftmod.rks.texture.GpuTexture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -38,18 +40,20 @@ public class MaterialUploader {
 
         var variantMap = new HashMap<String, Map<String, Map<TextureType, List<String>>>>();
 
-        variants.forEach((name, modifiers) -> {
-            var textures = new HashMap<String, Map<TextureType, List<String>>>();
+        if(variants != null && variants.isEmpty()) {
+            variants.forEach((name, modifiers) -> {
+                var textures = new HashMap<String, Map<TextureType, List<String>>>();
 
-            for (VariantModifier mod : modifiers) {
+                for (VariantModifier mod : modifiers) {
 
-                if(mod instanceof SetTextureModifier setTextureModifier) {
-                    textures.computeIfAbsent(setTextureModifier.material, a -> new HashMap<>()).put(setTextureModifier.textureType, setTextureModifier.texture.layers());
+                    if (mod instanceof SetTextureModifier setTextureModifier) {
+                        textures.computeIfAbsent(setTextureModifier.material, a -> new HashMap<>()).put(setTextureModifier.textureType, setTextureModifier.texture.layers());
+                    }
                 }
-            }
 
-            variantMap.put(name, textures);
-        });
+                variantMap.put(name, textures);
+            });
+        }
 
 
         for (var entry : model.config().materials.entrySet()) {
@@ -83,18 +87,11 @@ public class MaterialUploader {
 
                 for (var type : shader.texturesUsed()) {
 
-                    List<String> texture = null;
-                    if (variantTypes != null && variantTypes.containsKey(type)) {
-                        texture = variantTypes.get(type);
-                    }
-                    else {
-                        texture = meshMaterial.getTextures(type);
-                    }
+                    List<String> texture = variantTypes != null && variantTypes.containsKey(type) ? variantTypes.get(type) : meshMaterial.getTextures(type);
 
                     if (texture.size() < 1) LOGGER.debug("Shader expects " + type + " but the texture is missing");
                     else {
-                        List<String> finalTexture = texture;
-                        mainThreadUploads.add(() -> upload(material, type, mergeAndLoad(locator, filter, finalTexture)));
+                        mainThreadUploads.add(() -> upload(material, type, mergeAndLoad(locator, filter, texture)));
                     }
                 }
 
@@ -137,7 +134,19 @@ public class MaterialUploader {
                 }
 
                 processedImages.add(mirror);
-            } else processedImages.add(image);
+            } else {
+                var mirror = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        int p = image.getRGB(x, y);
+                        mirror.setRGB(x, y, p);
+                        mirror.setRGB(x, y, p);
+                    }
+                }
+
+                processedImages.add(mirror);
+            }
         }
 
         var baseImage = processedImages.get(0);

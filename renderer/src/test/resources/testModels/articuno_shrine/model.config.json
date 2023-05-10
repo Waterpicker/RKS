@@ -1,0 +1,10 @@
+{
+	"shadingMethod": "pokemon",
+	"emissionIntensity": 0.3,
+	"textureFiltering": "NEAREST",
+	"materials": {
+		"Rock 1": {
+			"albedo": ["articuno_shrine.jxl"]
+		}
+	}
+}
