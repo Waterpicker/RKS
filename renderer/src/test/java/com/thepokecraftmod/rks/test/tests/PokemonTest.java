@@ -68,8 +68,8 @@ public class PokemonTest {
 //                "move",
 //                "move_fast"
 //        );
-        for (int i = 0; i < 1; i++) {
-            var instance = new AnimatedObjectInstance(220, new Matrix4f().rotateXYZ(0, (float) Math.toRadians(180), 0), materialName -> uploadUniforms(materialName, material));
+        for (int i = 0; i < 5; i++) {
+            var instance = new AnimatedObjectInstance(220, new Matrix4f().rotateXYZ(0, (float) Math.toRadians(180 * (i * 0.1)), 0).translate(0.0f, 0.1f * i, 0.0f), materialName -> uploadUniforms(materialName, material));
             RKS.add(object, instance);
 //            var randomAnimation1 = possibleAnimations.get(RANDOM.nextInt(0, possibleAnimations.size()));
 //            var randomAnimation2 = possibleAnimations.get(RANDOM.nextInt(0, possibleAnimations.size()));
